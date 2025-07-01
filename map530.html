@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>登別マップ</title>
+  <style>
+    :root {
+      --font-family-base: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "メイリオ", Meiryo, sans-serif;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
+      --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.15);
+      --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.2);
+      --color-all-bg: #4285F4;
+      --color-all-active: #3367D6;
+      --color-enma-bg: #AE00FF;
+      --color-enma-active: #8A00CC;
+      --color-brand-bg: #1E88E5;
+      --color-brand-active: #1565C0;
+      --color-ainu-bg: #43A047;
+      --color-ainu-active: #2E7D32;
+      --info-bg: #757575;
+      --info-text: #ffffff;
+      --info-link: #ffffff;
+      --info-link-border: rgba(255, 255, 255, 0.7);
+      --info-link-hover-bg: rgba(255, 255, 255, 0.15);
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: var(--font-family-base);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow: hidden;
+    }
+    #map {
+      height: 100vh;
+      width: 100%;
+    }
+    .hamburger-btn {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(0,0,0,0.05);
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      box-shadow: var(--shadow-md);
+      z-index: 1001;
+      font-size: 24px;
+      color: #333;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .hamburger-btn:hover {
+      transform: translateY(-2px) scale(1.05);
+      box-shadow: var(--shadow-lg);
+    }
+    .hamburger-btn.is-active {
+      transform: rotate(180deg);
+    }
+    .fab-button {
+      position: fixed;
+      z-index: 998;
+      width: 56px;
+      height: 56px;
+      background-color: #fff;
+      border-radius: 50%;
+      box-shadow: var(--shadow-md);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease-in-out;
+    }
+    .fab-button:hover {
+      transform: scale(1.05);
+      box-shadow: var(--shadow-lg);
+    }
+    .fab-button svg {
+      fill: #555;
+    }
+    .fab-button.bottom-right {
+      bottom: 25px;
+      right: 20px;
+    }
+    .fab-button.bottom-left {
+      bottom: 25px;
+      left: 20px;
+    }
+    /* ★★★ 初期表示に戻すボタンの位置調整 ★★★ */
+    .fab-button.reset-view-btn {
+      bottom: 95px; /* 現在地ボタンの上 (25px + 56px + 14px) */
+    }
+    .menu-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.4); z-index: 1000;
+      opacity: 0; visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s;
+    }
+    .menu-overlay.show {
+      opacity: 1; visibility: visible;
+    }
+    .side-menu {
+      position: fixed; top: 0; left: 0;
+      width: 280px; height: 100%; background: #fdfdfd;
+      box-shadow: var(--shadow-lg); transform: translateX(-100%);
+      transition: transform 0.3s ease-in-out;
+      z-index: 1002; display: flex; flex-direction: column;
+    }
+    .side-menu.open {
+      transform: translateX(0);
+    }
+    .side-menu-header {
+      padding: 20px; border-bottom: 1px solid #eee;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .side-menu-header h3 {
+      margin: 0; font-size: 20px;
+    }
+    .side-menu-nav {
+      list-style: none; padding: 10px 0; margin: 0;
+    }
+    .side-menu-nav li button {
+      display: flex; align-items: center; gap: 16px;
+      width: 100%; padding: 16px 20px; background: none; border: none;
+      text-align: left; font-size: 16px; font-family: var(--font-family-base);
+      font-weight: 500; cursor: pointer; transition: background-color 0.2s;
+    }
+    .side-menu-nav li button:hover {
+      background-color: #f0f0f0;
+    }
+    .modal-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(4px);
+      z-index: 1999; opacity: 0; visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s;
+    }
+    .modal-overlay.show {
+      opacity: 1; visibility: visible;
+    }
+    .modal-panel {
+      position: fixed; top: 50%; left: 50%;
+      transform: translate(-50%, -50%) scale(0.95);
+      background: #ffffff; border-radius: var(--radius-lg);
+      padding: 24px; box-shadow: var(--shadow-lg);
+      z-index: 2000; width: 90%; max-width: 380px;
+      opacity: 0; visibility: hidden;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      display: flex; flex-direction: column;
+    }
+    .modal-panel.show {
+      opacity: 1; visibility: visible; transform: translate(-50%, -50%) scale(1);
+    }
+    .close-btn {
+      position: absolute; top: 12px; right: 12px;
+      background: #f0f0f0; border: none; border-radius: 50%;
+      width: 32px; height: 32px; font-size: 20px; color: #888; cursor: pointer;
+      transition: all 0.2s ease; display: flex; align-items: center; justify-content: center;
+    }
+    .close-btn:hover {
+      background: #e0e0e0; color: #333; transform: rotate(90deg);
+    }
+    .modal-title {
+      font-size: 20px; font-weight: bold; margin-bottom: 20px;
+      color: #333; text-align: center; flex-shrink: 0;
+    }
+    .filter-buttons {
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .filter-button {
+      border: 2px solid transparent; border-radius: var(--radius-md); padding: 12px 16px;
+      font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s ease;
+      display: flex; align-items: center; gap: 12px; text-align: left; color: white;
+    }
+    .filter-button:hover {
+      transform: translateY(-1px); box-shadow: var(--shadow-sm);
+    }
+    .filter-button.active {
+      transform: scale(1.03); box-shadow: var(--shadow-md); border-color: rgba(255,255,255,0.6);
+    }
+    .filter-icon {
+      font-size: 20px;
+    }
+    .filter-button.all-courses { background: var(--color-all-bg); }
+    .filter-button.enma-course { background: var(--color-enma-bg); }
+    .filter-button.brand-course { background: var(--color-brand-bg); }
+    .filter-button.ainu-course { background: var(--color-ainu-bg); }
+    .filter-button.all-courses.active { background: var(--color-all-active); }
+    .filter-button.enma-course.active { background: var(--color-enma-active); }
+    .filter-button.brand-course.active { background: var(--color-brand-active); }
+    .filter-button.ainu-course.active { background: var(--color-ainu-active); }
+    .tutorial-content { display: flex; flex-direction: column; gap: 16px; }
+    .tutorial-item { display: flex; align-items: flex-start; gap: 16px; }
+    .tutorial-icon { font-size: 28px; width: 40px; text-align: center; flex-shrink: 0; margin-top: -4px; }
+    .tutorial-text h4 { margin: 0 0 4px 0; font-size: 16px; color: #333; }
+    .tutorial-text p { margin: 0; font-size: 14px; color: #666; line-height: 1.5; }
+    .list-tabs {
+      display: flex; gap: 4px; margin: -10px -10px 16px -10px;
+      padding: 0 10px; border-bottom: 1px solid #eee; flex-shrink: 0; flex-wrap: wrap;
+    }
+    .list-tab {
+      padding: 10px; border: none; background-color: transparent;
+      font-size: 13px; font-weight: 500; cursor: pointer; color: #666;
+      border-bottom: 3px solid transparent; transition: all 0.2s ease;
+    }
+    .list-tab:hover { color: #000; background-color: #f5f5f5; }
+    .list-tab.active { color: var(--color-all-bg); font-weight: 700; border-bottom-color: var(--color-all-bg); }
+    .search-input-wrapper { margin-bottom: 16px; flex-shrink: 0; }
+    .search-input { width: 100%; padding: 12px 16px; font-size: 16px; border: 1px solid #ddd; border-radius: var(--radius-md); box-sizing: border-box; }
+    .spot-list { list-style: none; padding: 0; margin: 0; overflow-y: auto; max-height: 50vh; }
+    .spot-list-item { padding: 12px 8px; border-bottom: 1px solid #eee; cursor: pointer; transition: background-color 0.2s ease; }
+    .spot-list-item:hover { background-color: #f5f5f5; }
+    .spot-list-item:last-child { border-bottom: none; }
+    .spot-list-item .item-name { font-weight: 600; color: #333; }
+    .spot-list-item .item-course { font-size: 12px; color: #888; margin-top: 4px; }
+    .info-window-container {
+      background-color: var(--info-bg); color: var(--info-text); padding: 16px;
+      border-radius: var(--radius-md); box-shadow: var(--shadow-lg);
+      max-width: 250px; font-size: 14px;
+    }
+    .info-window-container strong { font-size: 18px; font-weight: bold; display: block; margin-bottom: 4px; }
+    .info-window-container .info-course { font-size: 12px; display: block; margin-bottom: 12px; opacity: 0.9; }
+    .info-window-container img { width: 100%; height: auto; border-radius: var(--radius-sm); margin-top: 5px; margin-bottom: 12px; background-color: rgba(0,0,0,0.1); }
+    .info-window-container .info-links { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+    .info-window-container .info-link {
+      display: block; padding: 8px 12px; border: 1px solid var(--info-link-border);
+      color: var(--info-link); text-decoration: none; border-radius: var(--radius-sm);
+      text-align: center; font-size: 14px; font-weight: 600; transition: background-color 0.2s ease;
+    }
+    .info-window-container .info-link:hover { background-color: var(--info-link-hover-bg); }
+    @media (max-width: 768px) {
+      .hamburger-btn { top: 15px; left: 15px; }
+      .fab-button.bottom-right { bottom: 20px; right: 15px; }
+      .fab-button.bottom-left { bottom: 20px; left: 15px; }
+      /* ★★★ スマホ表示での「初期表示に戻す」ボタンの位置調整 ★★★ */
+      .fab-button.reset-view-btn {
+        bottom: 90px; /* 20px + 56px + 14px */
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  <button class="hamburger-btn" id="hamburgerBtn">☰</button>
+  <div class="menu-overlay" id="menuOverlay"></div>
+  <div class="side-menu" id="sideMenu">
+    <div class="side-menu-header">
+      <h3>メニュー</h3>
+      <button class="close-btn" id="closeMenuBtn">×</button>
+    </div>
+    <ul class="side-menu-nav">
+      <li><button id="menuOpenSearchBtn">🔍 スポットを探す</button></li>
+      <li><button id="menuOpenFilterBtn">📍 コース選択</button></li>
+      <li><button id="menuTutorialBtn">❓ 使い方</button></li>
+    </ul>
+  </div>
+  <div class="modal-overlay" id="modalOverlay"></div>
+  <div class="modal-panel" id="filterModal">
+    <button class="close-btn">×</button>
+    <div class="modal-title">コースを選択</div>
+    <div class="filter-buttons">
+      <button class="filter-button all-courses active" data-course="all"><span class="filter-icon">🗺️</span><span>すべて表示</span></button>
+      <button class="filter-button enma-course" data-course="登別閻魔やきそばコース"><span class="filter-icon">🍜</span><span>閻魔やきそば</span></button>
+      <button class="filter-button brand-course" data-course="登別ブランド推奨品コース"><span class="filter-icon">🏪</span><span>ブランド推奨品</span></button>
+      <button class="filter-button ainu-course" data-course="アイヌ文化施設・史跡コース"><span class="filter-icon">🏛️</span><span>アイヌ文化・史跡</span></button>
+    </div>
+  </div>
+  <div class="modal-panel" id="tutorialModal">
+    <button class="close-btn">×</button>
+    <div class="modal-title">マップの操作方法</div>
+    <div class="tutorial-content">
+      <div class="tutorial-item"><div class="tutorial-icon">↕️</div><div class="tutorial-text"><h4>拡大・縮小</h4><p>ピンチ操作、またはマウスホイールで地図を拡大・縮小できます。</p></div></div>
+      <div class="tutorial-item"><div class="tutorial-icon">🖐️</div><div class="tutorial-text"><h4>地図の移動</h4><p>ドラッグ（スワイプ）して、地図を自由に動かせます。</p></div></div>
+      <div class="tutorial-item"><div class="tutorial-icon" style="font-size:34px;">♨️</div><div class="tutorial-text"><h4>スポット詳細</h4><p>スタンプ型のアイコンをタップすると、お店や史跡の詳細情報が見られます。</p></div></div>
+      <div class="tutorial-item"><div class="tutorial-icon">🔴</div><div class="tutorial-text"><h4>グループ表示</h4><p>赤い丸は、複数のスポットがまとまっている印です。地図を拡大すると個別のアイコンに分かれます。</p></div></div>
+    </div>
+  </div>
+  <div class="modal-panel" id="searchListModal">
+    <button class="close-btn">×</button>
+    <div class="modal-title">スポットを探す</div>
+    <div class="list-tabs">
+      <button class="list-tab active" data-course-filter="all">すべて</button>
+      <button class="list-tab" data-course-filter="登別閻魔やきそばコース">閻魔やきそば</button>
+      <button class="list-tab" data-course-filter="登別ブランド推奨品コース">ブランド推奨品</button>
+      <button class="list-tab" data-course-filter="アイヌ文化施設・史跡コース">アイヌ文化</button>
+    </div>
+    <div class="search-input-wrapper">
+      <input type="text" id="searchInput" class="search-input" placeholder="スポット名で検索...">
+    </div>
+    <ul class="spot-list" id="spotList"></ul>
+  </div>
+
+  <button class="fab-button bottom-right reset-view-btn" id="resetViewBtn" aria-label="初期表示に戻す">
+    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#555555"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M14 12c0-1.1-.9-2-2-2s-2 .9-2 2 .9 2 2 2 2-.9 2-2zm-2-9c-4.97 0-9 4.03-9 9H0l4 4 4-4H5c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.51 0-2.91-.46-4.12-1.24l-1.43 1.43C8.63 20.33 10.22 21 12 21c4.97 0 9-4.03 9-9s-4.03-9-9-9z"/></svg>
+  </button>
+
+  <button class="fab-button bottom-right" id="currentLocationBtn" aria-label="現在地に戻る">
+    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3c-.46-4.17-3.77-7.48-7.94-7.94V1h-2v2.06C6.83 3.52 3.52 6.83 3.06 11H1v2h2.06c.46 4.17 3.77 7.48 7.94 7.94V23h2v-2.06c4.17-.46 7.48-3.77 7.94-7.94H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/></svg>
+  </button>
+  <button class="fab-button bottom-left" id="homeBtn" aria-label="ホームに戻る">
+    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+  </button>
+  
+  <script>
+    let map, markerCluster, currentLocationMarker = null, openInfoWindow = null, allMarkers = [], activeFilter = 'all';
+
+    // --- Data Store ---
+    const locations = [
+      {lat: 42.494236076469, lng: 141.14388744287, spot: "温泉市場（登別閻魔やきそば）", url: "http://www.onsenichiba.com/", course: "登別閻魔やきそばコース", imageUrl: "https://www.noboribetsubrand.jp/wp-content/uploads/2021/02/enma01.jpg"},
+      {lat: 42.4916613838119, lng: 141.142098547207, spot: "食事処　松前", url: "https://www.nobogura.co.jp/dining/restaurant/", course: "登別閻魔やきそばコース", imageUrl: null},
+      {lat: 42.4943148371567, lng: 141.143680649998, spot: "喫茶　田園", url: "https://noboribetsu-spa.jp/spot/spot0203/", course: "登別閻魔やきそばコース", imageUrl: null},
+      {lat: 42.4915529300037, lng: 141.14433525912, spot: "郷の味　しらかば", url: null, course: "登別閻魔やきそばコース", imageUrl: null},
+      {lat: 42.4937142208662, lng: 141.143137725688, spot: "いせくら", url: "https://www.sanpei.club/page/isekura/index.html", course: "登別閻魔やきそばコース", imageUrl: null},
+      {lat: 42.4555700074842, lng: 141.177458452443, spot: "きっさ点", url: null, course: "登別閻魔やきそばコース", imageUrl: null},
+      {lat: 42.4539420610664, lng: 141.178254537727, spot: "やきとりの一平　登別店", url: "https://www.e-ippei.com/group/", course: "登別閻魔やきそばコース", imageUrl: null},
+      {lat: 42.4863725778833, lng: 141.10834812546, spot: "登別カントリー倶楽部レストラン", url: "http://www.noboribetsu-cc.com/clubhouse/restaurant/", course: "登別閻魔やきそばコース", imageUrl: null},
+      {lat: 42.4526813879383, lng: 141.18108263489, spot: "ピアチェーレ・ノーチェ", url: "http://www.sanai-hospital.or.jp/topics/detail.php?id=1162", course: "登別閻魔やきそばコース", imageUrl: null},
+      {lat: 42.4649013168959, lng: 141.178466596623, spot: "わかさいも本舗登別東店レストラン桜", url: "https://www.wakasaimo.com/sakura/", course: "登別閻魔やきそばコース", imageUrl: null},
+      {lat: 42.455084675910726, lng: 141.18276904067434, spot: "レストランリーベ", url: "https://www.nixe.co.jp/restaurant-shop/", course: "登別閻魔やきそばコース", imageUrl: null},
+      {lat: 42.4525980360193, lng: 141.179705223505, spot: "食事＆喫茶 eファミリー", url: null, course: "登別閻魔やきそばコース", imageUrl: null},
+      {lat: 42.4098728313299, lng: 141.105935135582, spot: "福来軒", url: null, course: "登別閻魔やきそばコース", imageUrl: null},
+      {lat: 42.4098079507374, lng: 141.105027766722, spot: "ほろべつ屋台村　箸遊　佳乃", url: null, course: "登別閻魔やきそばコース", imageUrl: null},
+      {lat: 42.421999925894, lng: 141.116437287897, spot: "ソーダ食堂", url: null, course: "登別閻魔やきそばコース", imageUrl: null},
+      {lat: 42.410723608708, lng: 141.107017411201, spot: "焼肉居酒屋 ぐうちょきぱ", url: null, course: "登別閻魔やきそばコース", imageUrl: null},
+      {lat: 42.4113284689576, lng: 141.104806704455, spot: "ぱぴあ", url: null, course: "登別閻魔やきそばコース", imageUrl: null},
+      {lat: 42.4101148157229, lng: 141.106214620393, spot: "旬の台所くる美", url: "https://shun-kurumi.com/", course: "登別閻魔やきそばコース", imageUrl: null},
+      {lat: 42.4121797231925, lng: 141.106769062128, spot: "つぼ八 幌別店", url: "https://www.tsubohachi.co.jp/shop/other/horobetsu/", course: "登別閻魔やきそばコース", imageUrl: null},
+      {lat: 42.4122093473794, lng: 141.103855564575, spot: "旬の華 和か菜", url: "https://shunnohana-wakana.com/", course: "登別閻魔やきそばコース", imageUrl: null},
+      {lat: 42.3692010275891, lng: 141.054798666985, spot: "室蘭やきとり一平若草店", url: "https://muroran-yakitori.com/wakakusa.html", course: "登別閻魔やきそばコース", imageUrl: null},
+      {lat: 42.3743270710275, lng: 141.061311157797, spot: "カフェ アンジュリエ", url: "https://cafeangeller.amebaownd.com/", course: "登別閻魔やきそばコース", imageUrl: null},
+      {lat: 42.49419899432107, lng: 141.14386330410187, spot: "温泉市場（登別ブランド）", url: "http://www.onsenichiba.com/", course: "登別ブランド推奨品コース", imageUrl: null},
+      {lat: 42.4917029918133, lng: 141.14211197724, spot: "祝いの宿　登別グランドホテル", url: "https://www.nobogura.co.jp/", course: "登別ブランド推奨品コース", imageUrl: null},
+      {lat: 42.4921533982493, lng: 141.143095813196, spot: "大黒屋民芸店", url: "https://daikokuya-m.com/", course: "登別ブランド推奨品コース", imageUrl: null},
+      {lat: 42.4928262042903, lng: 141.142972700538, spot: "Pizzeria ASTRA", url: "https://noboribetsu-spa.jp/spot/spot0212/", course: "登別ブランド推奨品コース", imageUrl: null},
+      {lat: 42.4940231, lng: 141.1436458, spot: "藤崎わさび園", url: "https://marufuji-wasabi.jp/", course: "登別ブランド推奨品コース", imageUrl: null},
+      {lat: 42.4590154522764, lng: 141.117797846876, spot: "のぼりべつ酪農館", url: "https://www.rakunoukan.com/", course: "登別ブランド推奨品コース", imageUrl: null},
+      {lat: 42.4423598344062, lng: 141.157210863125, spot: "マルフク武澤水産", url: null, course: "登別ブランド推奨品コース", imageUrl: null},
+      {lat: 42.4502155219196, lng: 141.176329698661, spot: "肉のあさひ", url: null, course: "登別ブランド推奨品コース", imageUrl: null},
+      {lat: 42.4650120464239, lng: 141.178445118043, spot: "わかさいも本舗登別東店", url: "https://www.wakasaimo.com/shop/noboribetsuhigashi/", course: "登別ブランド推奨品コース", imageUrl: null},
+      {lat: 42.4526851543173, lng: 141.1811978763, spot: "登別観光交流センター「ヌプル」（登別ブランド）", url: "https://nupur.jp/shop", course: "登別ブランド推奨品コース", imageUrl: null},
+      {lat: 42.4112147728944, lng: 141.104402410178, spot: "かめやアーニス店", url: null, course: "登別ブランド推奨品コース", imageUrl: null},
+      {lat: 42.4111989301926, lng: 141.104477512024, spot: "のぼりべつブランドショップ", url: null, course: "登別ブランド推奨品コース", imageUrl: null},
+      {lat: 42.4104320929562, lng: 141.110136055436, spot: "道南平塚食品", url: "https://nattou.co.jp/hiratsuka/", course: "登別ブランド推奨品コース", imageUrl: null},
+      {lat: 42.3911083327445, lng: 141.077875460398, spot: "わかさいも本舗登別本店", url: "https://www.wakasaimo.com/shop/noboribetsuhonten/", course: "登別ブランド推奨品コース", imageUrl: null},
+      {lat: 42.3569882225151, lng: 141.050166229365, spot: "かめや本店", url: null, course: "登別ブランド推奨品コース", imageUrl: null},
+      {lat: 42.3748237100555, lng: 141.066207315879, spot: "冷鮮工房うす田", url: "https://www.reisenkoubou-usuda.com/", course: "登別ブランド推奨品コース", imageUrl: null},
+      {lat: 42.4906161688549, lng: 141.159028132679, spot: "ユーカラの里（のぼりべつクマ牧場内）", url: "https://bearpark.jp/yukar/", course: "アイヌ文化施設・史跡コース", imageUrl: null},
+      {lat: 42.452548572691065,lng: 141.18123586014346, spot: "登別観光交流センター「ヌプル」（アイヌ文化）", url: "https://nupur.jp/", course: "アイヌ文化施設・史跡コース", imageUrl: null},
+      {lat: 42.4513315909502, lng: 141.167191399963, spot: "知里幸恵 銀のしずく記念館", url: "https://www.ginnoshizuku.com/", course: "アイヌ文化施設・史跡コース", imageUrl: null},
+      {lat: 42.4205468059822, lng: 141.081934228961, spot: "登別市郷土資料館", url: "https://www.city.noboribetsu.lg.jp/docs/shiryokan/", course: "アイヌ文化施設・史跡コース", imageUrl: null},
+      {lat: 42.4471394654528, lng: 141.157277281413, spot: "知里幸恵の墓・金成マツの碑", url: null, course: "アイヌ文化施設・史跡コース", imageUrl: null},
+      {lat: 42.4494174865133, lng: 141.16995340134, spot: "知里真志保の碑", url: null, course: "アイヌ文化施設・史跡コース", imageUrl: null},
+      {lat: 42.4715023441873, lng: 141.156145985958, spot: "カムイワッカ", url: null, course: "アイヌ文化施設・史跡コース", imageUrl: null},
+      {lat: 42.4494596016715, lng: 141.169728635397, spot: "ヌプルペッ（登別川）", url: null, course: "アイヌ文化施設・史跡コース", imageUrl: null},
+      {lat: 42.4449682422638, lng: 141.16140251897, spot: "アフンルパル", url: null, course: "アイヌ文化施設・史跡コース", imageUrl: null},
+      {lat: 42.4528239772223, lng: 141.183436279579, spot: "フンペサパ（フンベ山）", url: null, course: "アイヌ文化施設・史跡コース", imageUrl: null},
+      {lat: 42.4120519586187, lng: 141.111087745259, spot: "愛隣学校跡", url: null, course: "アイヌ文化施設・史跡コース", imageUrl: null},
+      {lat: 42.4252013307922, lng: 141.117694026024, spot: "オカシペッ（岡志別）", url: null, course: "アイヌ文化施設・史跡コース", imageUrl: null},
+      {lat: 42.3903700737259, lng: 141.080074799846, spot: "キウシト湿原", url: null, course: "アイヌ文化施設・史跡コース", imageUrl: null}
+    ];
+
+    // ★★★ 初期表示の情報を定数化 ★★★
+    const INITIAL_VIEW = {
+      center: { lat: 42.409441, lng: 141.1069605 },
+      zoom: 13
+    };
+    
+    function initMap() {
+      const dom = { map: document.getElementById('map'), hamburgerBtn: document.getElementById('hamburgerBtn'), sideMenu: document.getElementById('sideMenu'), menuOverlay: document.getElementById('menuOverlay'), modalOverlay: document.getElementById('modalOverlay'), filterModal: document.getElementById('filterModal'), tutorialModal: document.getElementById('tutorialModal'), searchListModal: document.getElementById('searchListModal'), searchInput: document.getElementById('searchInput'), spotList: document.getElementById('spotList'), };
+      map = new google.maps.Map(dom.map, { center: INITIAL_VIEW.center, zoom: INITIAL_VIEW.zoom, maxZoom: 20, minZoom: 10, disableDefaultUI: true, gestureHandling: 'greedy', restriction: { latLngBounds: { north: 43.0, south: 42.0, west: 140.8646, east: 141.328 }, strictBounds: true, }, });
+      setupEventListeners(dom);
+      if (localStorage.getItem('noboribetsuMapVisited') !== 'true') { setTimeout(() => { openModal(dom.tutorialModal); localStorage.setItem('noboribetsuMapVisited', 'true'); }, 1000); }
+      startWatchingLocation();
+      allMarkers = locations.map(createMarker);
+      updateMarkerDisplay();
+    }
+
+    function setupEventListeners(dom) {
+      const toggleSideMenu = () => { dom.sideMenu.classList.toggle('open'); dom.menuOverlay.classList.toggle('show'); dom.hamburgerBtn.classList.toggle('is-active'); };
+      dom.hamburgerBtn.addEventListener('click', toggleSideMenu);
+      document.getElementById('closeMenuBtn').addEventListener('click', toggleSideMenu);
+      dom.menuOverlay.addEventListener('click', toggleSideMenu);
+      const openModal = (modal) => { if (dom.sideMenu.classList.contains('open')) toggleSideMenu(); setTimeout(() => { modal.classList.add('show'); dom.modalOverlay.classList.add('show'); }, 250); };
+      const closeAllModals = () => { document.querySelectorAll('.modal-panel.show').forEach(m => m.classList.remove('show')); dom.modalOverlay.classList.remove('show'); };
+      document.querySelectorAll('.close-btn').forEach(btn => btn.addEventListener('click', closeAllModals));
+      dom.modalOverlay.addEventListener('click', closeAllModals);
+      document.getElementById('menuOpenFilterBtn').addEventListener('click', () => openModal(dom.filterModal));
+      document.getElementById('menuTutorialBtn').addEventListener('click', () => openModal(dom.tutorialModal));
+      document.getElementById('menuOpenSearchBtn').addEventListener('click', () => { updateSpotList(''); openModal(dom.searchListModal); });
+      map.addListener('click', () => { if (openInfoWindow) { openInfoWindow.close(); openInfoWindow = null; } });
+      
+      document.getElementById('currentLocationBtn').addEventListener('click', () => {
+        if (currentLocationMarker?.getMap()) { map.panTo(currentLocationMarker.getPosition()); animatedZoom(16); }
+        else { alert('現在地が取得できていません。ブラウザの位置情報設定を確認し、許可してください。'); }
+      });
+      // ★★★「初期表示に戻す」ボタンのイベントリスナーを追加 ★★★
+      document.getElementById('resetViewBtn').addEventListener('click', () => {
+        map.panTo(INITIAL_VIEW.center);
+        animatedZoom(INITIAL_VIEW.zoom);
+      });
+
+      document.getElementById('homeBtn').addEventListener('click', () => { alert('トップページに戻ります'); });
+      document.querySelectorAll('.filter-button').forEach(button => { button.addEventListener('click', () => { activeFilter = button.dataset.course; document.querySelector('.filter-button.active').classList.remove('active'); button.classList.add('active'); updateMarkerDisplay(); setTimeout(closeAllModals, 250); }); });
+      dom.searchInput.addEventListener('input', (e) => updateSpotList(e.target.value));
+      document.querySelectorAll('.list-tab').forEach(tab => { tab.addEventListener('click', () => { document.querySelector('.list-tab.active').classList.remove('active'); tab.classList.add('active'); updateSpotList(dom.searchInput.value); }); });
+      dom.spotList.addEventListener('click', (e) => {
+        const listItem = e.target.closest('.spot-list-item');
+        if (listItem) {
+          const marker = allMarkers[listItem.dataset.index];
+          if (marker) { map.setCenter(marker.getPosition()); map.setZoom(17); google.maps.event.trigger(marker, 'click'); closeAllModals(); }
+        }
+      });
+    }
+
+    function startWatchingLocation() {
+      if (!navigator.geolocation) return;
+      navigator.geolocation.watchPosition(
+        (position) => {
+          const userLocation = { lat: position.coords.latitude, lng: position.coords.longitude };
+          const bounds = map.getRestriction().latLngBounds;
+          if (bounds?.contains(userLocation)) {
+            if (!currentLocationMarker) {
+              currentLocationMarker = new google.maps.Marker({ position: userLocation, map: map, title: '現在地', icon: { path: google.maps.SymbolPath.CIRCLE, scale: 9, fillColor: '#4285F4', fillOpacity: 1, strokeColor: '#ffffff', strokeWeight: 3 }, zIndex: 1000000, });
+            } else { currentLocationMarker.setPosition(userLocation); }
+          }
+        },
+        (error) => { console.warn(`位置情報の取得エラー: ${error.message}`); },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
+      );
+    }
+    
+    function animatedZoom(targetZoom) {
+      let currentZoom = map.getZoom();
+      const step = targetZoom > currentZoom ? 1 : -1;
+      const zoomInterval = setInterval(() => {
+        currentZoom += step;
+        if ((step > 0 && currentZoom >= targetZoom) || (step < 0 && currentZoom <= targetZoom)) {
+          map.setZoom(targetZoom);
+          clearInterval(zoomInterval);
+        } else {
+          map.setZoom(currentZoom);
+        }
+      }, 80);
+    }
+
+    function updateMarkerDisplay() {
+      if (markerCluster) markerCluster.clearMarkers();
+      const filteredMarkers = allMarkers.filter(marker => activeFilter === 'all' || marker.course === activeFilter);
+      markerCluster = new markerClusterer.MarkerClusterer({
+        map,
+        markers: filteredMarkers,
+        algorithm: new markerClusterer.SuperClusterAlgorithm({ radius: 60, maxZoom: 16 }),
+        renderer: clusterRenderer,
+        onClusterClick: (event, cluster, map) => {
+          if (openInfoWindow) { openInfoWindow.close(); openInfoWindow = null; }
+          map.panTo(cluster.position);
+          animatedZoom(map.getZoom() + 2);
+        },
+      });
+    }
+
+    function createMarker(location) {
+      const courseColorVar = getCourseColor(location.course);
+      const courseColor = getComputedStyle(document.documentElement).getPropertyValue(courseColorVar.match(/--([a-z-]+)/)[0]).trim();
+      const markerSize = 50;
+      const svgIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="${markerSize}" height="${markerSize}" viewBox="0 0 ${markerSize} ${markerSize}"><defs><filter id="dropshadow" height="130%"><feGaussianBlur in="SourceAlpha" stdDeviation="1.5"/><feOffset dx="0" dy="1" result="offsetblur"/><feComponentTransfer><feFuncA type="linear" slope="0.5"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><g filter="url(#dropshadow)"><path d="M25,2.5C14.2,2.5,2.5,14.2,2.5,25S14.2,47.5,25,47.5,47.5,35.8,47.5,25,35.8,2.5,25,2.5Z" fill="${courseColor}" stroke="#ffffff" stroke-width="2"/><text x="50%" y="50%" dominant-baseline="central" text-anchor="middle" font-family="Arial, sans-serif" font-size="22px" font-weight="bold" fill="#ffffff" paint-order="stroke" stroke="#000000" stroke-width="0.5px" stroke-opacity="0.3">${location.spot.charAt(0)}</text></g></svg>`;
+      const marker = new google.maps.Marker({ position: { lat: location.lat, lng: location.lng }, title: location.spot, icon: { url: 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgIcon))), scaledSize: new google.maps.Size(markerSize, markerSize), anchor: new google.maps.Point(markerSize / 2, markerSize / 2), }, course: location.course, });
+      const infoWindow = new google.maps.InfoWindow({ content: createInfoWindowContent(location), pixelOffset: new google.maps.Size(0, -32), });
+      marker.addListener('click', () => { if (openInfoWindow) openInfoWindow.close(); infoWindow.open(map, marker); openInfoWindow = infoWindow; });
+      return marker;
+    }
+
+    function createInfoWindowContent(location) {
+      const courseColorVar = getCourseColor(location.course);
+      const courseColor = getComputedStyle(document.documentElement).getPropertyValue(courseColorVar.match(/--([a-z-]+)/)[0]).trim();
+      const isDarkBg = getBrightness(courseColor) < 150;
+      const container = document.createElement('div');
+      container.className = 'info-window-container';
+      container.style.setProperty('--info-bg', courseColor);
+      container.style.setProperty('--info-text', isDarkBg ? '#FFFFFF' : '#222222');
+      container.style.setProperty('--info-link', isDarkBg ? '#FFFFFF' : '#222222');
+      container.style.setProperty('--info-link-border', isDarkBg ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.3)');
+      container.style.setProperty('--info-link-hover-bg', isDarkBg ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.08)');
+      const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${location.lat},${location.lng}`;
+      container.innerHTML = `<strong>${location.spot}</strong><span class="info-course">コース: ${location.course}</span> ${location.imageUrl ? `<img src="${location.imageUrl}" alt="${location.spot}">` : ''} <div class="info-links"> ${location.url ? `<a href="${location.url}" target="_blank" rel="noopener" class="info-link">詳細を見る</a>` : ''} <a href="${directionsUrl}" target="_blank" rel="noopener" class="info-link">ここへの経路を検索</a></div>`;
+      return container;
+    }
+
+    const clusterRenderer = {
+      render: ({ count, position }) => {
+        const size = count < 10 ? 45 : count < 25 ? 55 : 65;
+        const fontSize = count < 10 ? 14 : count < 25 ? 16 : 18;
+        const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}"><g filter="url(#cluster-shadow)"><circle cx="${size/2}" cy="${size/2}" r="${size/2-3}" fill="#ff6b6b" stroke="rgba(255,255,255,0.8)" stroke-width="4" /><text x="50%" y="50%" dominant-baseline="central" text-anchor="middle" font-family="Arial, sans-serif" font-size="${fontSize}px" font-weight="bold" fill="white">${count}</text></g></svg>`;
+        return new google.maps.Marker({ position, icon: { url: 'data:image/svg+xml;base64,' + btoa(svg), scaledSize: new google.maps.Size(size, size), anchor: new google.maps.Point(size/2, size/2) }, zIndex: 999, });
+      }
+    };
+
+    function updateSpotList(searchTerm = '') {
+      const spotListEl = document.getElementById('spotList');
+      const searchInputEl = document.getElementById('searchInput');
+      const activeTab = document.querySelector('.list-tab.active');
+      searchInputEl.value = searchTerm;
+      const currentCourseFilter = activeTab.dataset.courseFilter;
+      const filteredLocations = locations.filter(loc => currentCourseFilter === 'all' || loc.course === currentCourseFilter).filter(loc => loc.spot.toLowerCase().includes(searchTerm.toLowerCase()));
+      if (filteredLocations.length === 0) { spotListEl.innerHTML = '<li class="spot-list-item" style="text-align:center; color:#888;">該当するスポットはありません。</li>'; return; }
+      spotListEl.innerHTML = filteredLocations.map(location => { const originalIndex = locations.indexOf(location); return `<li class="spot-list-item" data-index="${originalIndex}"><div class="item-name">${location.spot}</div><div class="item-course">${location.course}</div></li>`; }).join('');
+    }
+
+    function getBrightness(hexColor) { const r = parseInt(hexColor.slice(1, 3), 16); const g = parseInt(hexColor.slice(3, 5), 16); const b = parseInt(hexColor.slice(5, 7), 16); return (r * 299 + g * 587 + b * 114) / 1000; }
+    function getCourseColor(course) { const colors = { "登別閻魔やきそばコース": "var(--color-enma-bg)", "登別ブランド推奨品コース": "var(--color-brand-bg)", "アイヌ文化施設・史跡コース": "var(--color-ainu-bg)" }; return colors[course] || "var(--color-all-bg)"; }
+    window.gm_authFailure = () => { alert('Google Maps APIの認証に失敗しました。APIキーを確認してください。'); };
+  </script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC627CoD9oEidIKSd5E-t7PDpVWeHOBrvY&callback=initMap&libraries=marker" async defer></script>
+  <script src="https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js"></script>
+</body>
+</html>
