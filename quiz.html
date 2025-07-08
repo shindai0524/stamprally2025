@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>クイズ</title>
+  <link rel="stylesheet" href="quiz.css">
+</head>
+<body>
+  <div id="quizContainer" class="quiz-container">
+    <div id="quizSection">
+      <h2 id="quizQuestion">問題文</h2>
+      <div id="quizOptions" class="quiz-options"></div>
+    </div>
+
+    <div id="correctSection" class="result-section hidden">
+      <h3>正解です！スタンプを獲得しました！</h3>
+      <button onclick="goHome()">ホームへ戻る</button>
+    </div>
+
+    <div id="wrongSection" class="result-section hidden">
+      <h3>不正解です。もう一度挑戦してください。</h3>
+      <button onclick="retryQuiz()">もう一度挑戦する</button>
+    </div>
+  </div>
+
+  <script>
+    const questions = [
+      // index = id - 1
+      {
+        id: 20, // stamp ID
+        course: "brand",
+        question: "",
+        options: ["", "", ""],
+        answer: 1
+      },
+      {
+        id: 21, // stamp ID
+        course: "brand",
+        question: "",
+        options: ["", "", ""],
+        answer: 2
+      },
+    　{
+        id: 22, // stamp ID
+        course: "brand",
+        question: "",
+        options: ["", "", ""],
+        answer: 0
+      },
+    　{
+        id: 23, // stamp ID
+        course: "brand",
+        question: "",
+        options: ["", "", ""],
+        answer: 1
+      },
+      {
+        id: 24, // stamp ID
+        course: "brand",
+        question: "",
+        options: ["", "", ""],
+        answer: 1
+      },
+      {
+        id: 25, // stamp ID
+        course: "brand",
+        question: "",
+        options: ["", "", ""],
+        answer: 1
+      },
+      {
+        id: 26, // stamp ID
+        course: "brand",
+        question: "",
+        options: ["", "", ""],
+        answer: 1
+      },
+      {
+        id: 27, // stamp ID
+        course: "brand",
+        question: "",
+        options: ["", "", ""],
+        answer: 1
+      },
+      {
+        id: 28, // stamp ID
+        course: "brand",
+        question: "",
+        options: ["", "", ""],
+        answer: 1
+      },
+      {
+        id: 29, // stamp ID
+        course: "brand",
+        question: "",
+        options: ["", "", ""],
+        answer: 1
+      },
+      {
+        id: 30, // stamp ID
+        course: "brand",
+        question: "",
+        options: ["", "", ""],
+        answer: 1
+      },
+      {
+        id: 31, // stamp ID
+        course: "brand",
+        question: "",
+        options: ["", "", ""],
+        answer: 1
+      },
+      {
+        id: 32, // stamp ID
+        course: "brand",
+        question: "",
+        options: ["", "", ""],
+        answer: 1
+      },
+      {
+        id: 33, // stamp ID
+        course: "brand",
+        question: "",
+        options: ["", "", ""],
+        answer: 1
+      },
+      {
+        id: 34, // stamp ID
+        course: "brand",
+        question: "",
+        options: ["", "", ""],
+        answer: 1
+      },
+      {
+        id: 35, // stamp ID
+        course: "brand",
+        question: "",
+        options: ["", "", ""],
+        answer: 1
+      },
+      {
+        id: 36, // stamp ID
+        course: "brand",
+        question: "",
+        options: ["", "", ""],
+        answer: 1
+      },
+      {
+        id: 37, // stamp ID
+        course: "ainu",
+        question: "",
+        options: ["", "", ""],
+        answer: 1
+      },
+      {
+        id: 38, // stamp ID
+        course: "ainu",
+        question: "",
+        options: ["", "", ""],
+        answer: 1
+      },
+      {
+        id: 39, // stamp ID
+        course: "ainu",
+        question: "",
+        options: ["", "", ""],
+        answer: 1
+      },
+      {
+        id: 40, // stamp ID
+        course: "ainu",
+        question: "",
+        options: ["", "", ""],
+        answer: 1
+      },
+      {
+        id: 41, // stamp ID
+        course: "ainu",
+        question: "",
+        options: ["", "", ""],
+        answer: 1
+      },
+      {
+        id: 42, // stamp ID
+        course: "ainu",
+        question: "",
+        options: ["", "", ""],
+        answer: 1
+      },
+      {
+        id: 43, // stamp ID
+        course: "ainu",
+        question: "",
+        options: ["", "", ""],
+        answer: 1
+      },
+      {
+        id: 44, // stamp ID
+        course: "ainu",
+        question: "",
+        options: ["", "", ""],
+        answer: 1
+      },
+      {
+        id: 45, // stamp ID
+        course: "ainu",
+        question: "",
+        options: ["", "", ""],
+        answer: 1
+      },
+      {
+        id: 46, // stamp ID
+        course: "ainu",
+        question: "",
+        options: ["", "", ""],
+        answer: 1
+      },
+      {
+        id: 47, // stamp ID
+        course: "ainu",
+        question: "",
+        options: ["", "", ""],
+        answer: 1
+      },
+      {
+        id: 48, // stamp ID
+        course: "ainu",
+        question: "",
+        options: ["", "", ""],
+        answer: 1
+      },
+      {
+        id: 49, // stamp ID
+        course: "ainu",
+        question: "",
+        options: ["", "", ""],
+        answer: 1
+      }
+    ];
+
+    const params = new URLSearchParams(window.location.search);
+    const quizId = parseInt(params.get("id"));
+    const question = questions.find(q => q.id === quizId);
+
+    const quizQuestion = document.getElementById("quizQuestion");
+    const quizOptions = document.getElementById("quizOptions");
+    const quizSection = document.getElementById("quizSection");
+    const correctSection = document.getElementById("correctSection");
+    const wrongSection = document.getElementById("wrongSection");
+
+    if (!question) {
+      quizQuestion.textContent = "このIDに対応する問題はありません。";
+    } else {
+      const stampKey = `stamp${question.id}`;
+      const obtained = JSON.parse(localStorage.getItem("obtainedStamps")) || {};
+
+      if (obtained[stampKey]) {
+        quizSection.innerHTML = `<h2>このスタンプはすでに獲得済みです。</h2>`;
+      } else {
+        quizQuestion.textContent = question.question;
+        quizOptions.innerHTML = "";
+
+        question.options.forEach((opt, index) => {
+          const btn = document.createElement("button");
+          btn.textContent = opt;
+          btn.className = "option-button";
+          btn.onclick = () => checkAnswer(index);
+          quizOptions.appendChild(btn);
+        });
+      }
+    }
+
+    function checkAnswer(selected) {
+      if (selected === question.answer) {
+        // 正解: localStorage に保存
+        const obtained = JSON.parse(localStorage.getItem("obtainedStamps")) || {};
+        obtained[`stamp${question.id}`] = {
+          date: new Date().toLocaleString()
+        };
+        localStorage.setItem("obtainedStamps", JSON.stringify(obtained));
+
+        quizSection.classList.add("hidden");
+        correctSection.classList.remove("hidden");
+      } else {
+        quizSection.classList.add("hidden");
+        wrongSection.classList.remove("hidden");
+      }
+    }
+
+    function retryQuiz() {
+      wrongSection.classList.add("hidden");
+      quizSection.classList.remove("hidden");
+    }
+
+    function goHome() {
+      window.location.href = "home.html";
+    }
+  </script>
+</body>
+</html>
