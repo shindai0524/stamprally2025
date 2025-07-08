@@ -1,0 +1,340 @@
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+}
+
+body {
+  background-image: url('png/home_back.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  padding-top: env(safe-area-inset-top);
+}
+
+/* ヘッダー */
+#logoHeader {
+  position: fixed;
+  top: 5px;
+  left: 55px;
+  z-index: 100;
+}
+
+#logoHeader img {
+  height: 70px;
+  width: auto;
+}
+
+header {
+  position: fixed;
+  top: 10px;
+  right: 35px;
+  display: flex;
+  flex-direction: row-reverse;
+  gap: 10px;
+  z-index: 100;
+}
+
+header button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+header img {
+  width: 48px;
+  height: 55px;
+}
+
+/* メニュー・ヘルプモーダル */
+#menuList,
+#helpList {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 20px 10px 10px;
+  z-index: 99;
+  width: 250px;
+  max-height: 60vh;
+  overflow-y: auto;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+#menuList ul,
+#helpList ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+#menuList li,
+#helpList li {
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+#menuList .close-btn,
+#helpList .close-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  z-index: 10;
+}
+
+#menuList .close-btn img,
+#helpList .close-btn img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* タブ */
+#tabButtons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 80px;
+  margin-bottom: 1em;
+}
+
+#tabButtons button {
+  padding: 0.5em 1em;
+  font-size: 0.6em;
+  border: none;
+  background: #eee;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#tabButtons button:hover {
+  background: #ccc;
+}
+
+/* スタンプ一覧 */
+.genre-block {
+  margin-bottom: 2em;
+  text-align: center;
+}
+
+.genre-title {
+  font-weight: bold;
+  margin-bottom: 0.5em;
+  font-size: 1.2em;
+}
+
+.stamp-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  justify-items: center;
+  gap: 10px;
+  max-width: 320px;
+  margin: 0 auto;
+}
+
+.stamp {
+  width: 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: transparent;
+  cursor: pointer;
+}
+
+.stamp-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 2px solid #999;
+  background-color: #fff;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.stamp-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.stamp-icon img.semi-transparent {
+  opacity: 0.4;
+}
+
+.stamp-name {
+  font-size: 0.7em;
+  text-align: center;
+  margin-top: 5px;
+  pointer-events: none;
+}
+
+/* ポップアップ */
+.popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  border-radius: 10px;
+  padding: 20px;
+  width: 280px;
+  max-width: 90%;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+  z-index: 200;
+  text-align: center;
+}
+
+.popup img {
+  width: 100px;
+  height: 100px;
+  display: block;
+  margin: 0 auto 10px;
+}
+
+.popup button {
+  display: block;
+  margin: 10px auto 0;
+}
+
+/* モーダル（ヘルプなど） */
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  border-radius: 10px;
+  padding: 20px 20px 60px; /* ← 下に余白追加 */
+  width: 90%;
+  max-width: 300px;
+  z-index: 30;
+  text-align: center;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+}
+
+.modal img {
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.help-controls {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+/* 固定QRボタン */
+#qrFixedButton {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 120;
+  width: 60px;
+  height: 60px;
+  display: block;
+}
+
+#qrFixedButton img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* 共通 */
+.hidden {
+  display: none;
+}
+
+.semi-transparent {
+  opacity: 0.4;
+}
+
+.help-modal-image-container {
+  position: relative;
+  width: 100%;
+  margin: 0 auto 10px;
+}
+
+.help-modal-image-container img {
+  width: 100%;
+  max-height: 300px;
+  object-fit: contain;
+}
+
+.help-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 2em;
+  background: rgba(255, 255, 255, 0.8);
+  border: none;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.help-arrow.left {
+  left: -10px;
+}
+
+.help-arrow.right {
+  right: -10px;
+}
+
+.help-arrow:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.help-controls-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  padding: 0 20px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.help-arrow-wrapper {
+  width: 30%; /* 左右固定幅 */
+  display: flex;
+  justify-content: flex-start;
+}
+
+.help-arrow-wrapper.right {
+  justify-content: flex-end;
+}
+
+.help-arrow-btn {
+  font-size: 1.5em;
+  padding: 10px 20px;
+  border: none;
+  background-color: #f0f0f0;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.help-arrow-btn.hidden {
+  visibility: hidden; /* 非表示でもスペースは確保 */
+}

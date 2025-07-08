@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>スタンプラリー ホーム</title>
+  <link rel="stylesheet" href="home.css">
+</head>
+<body>
+  <!-- ロゴ -->
+  <div id="logoHeader">
+    <img src="png/logo.png" alt="ロゴ">
+  </div>
+
+  <!-- ヘッダー：メニュー・ヘルプ -->
+  <header>
+    <button id="helpBtn"><img src="png/help_icon.png" alt="ヘルプ"></button>
+    <button id="menuBtn"><img src="png/menu_icon.png" alt="メニュー"></button>
+  </header>
+
+<!-- メニューリスト -->
+<div id="menuList" class="hidden">
+  <button class="close-btn" onclick="menuList.classList.add('hidden')"><img src="png/close.png" alt="閉じる"></button>
+  <ul>
+    <li><a href="help.html">参加方法・問い合わせ</a></li>
+    <li><a href="map.html">マップへ</a></li>
+    <li><a href="entry.html">応募フォームへ</a></li>
+  </ul>
+</div>
+
+<!-- ヘルプリスト -->
+<div id="helpList" class="hidden">
+  <button class="close-btn" onclick="helpList.classList.add('hidden')"><img src="png/close.png" alt="閉じる"></button>
+  <ul>
+    <li><a href="#" onclick="openHelp('home')">ホームの使い方</a></li>
+    <li><a href="#" onclick="openHelp('qr')">QRコード読み取りの使い方</a></li>
+  </ul>
+</div>
+
+<!-- ヘルプモーダル -->
+<div id="helpModal" class="modal hidden">
+  <!-- ヘルプ画像コンテナ -->
+  <div class="help-modal-image-container">
+    <img id="helpImage" src="png/image.png" alt="ヘルプ画像">
+  </div>
+
+  <!-- 矢印ボタン（左右に配置） -->
+  <div class="help-controls-bottom">
+    <div class="help-arrow-wrapper">
+      <button id="prevHelpBtn" class="help-arrow-btn hidden">&larr;</button>
+    </div>
+    <div class="help-arrow-wrapper right">
+      <button id="nextHelpBtn" class="help-arrow-btn hidden">&rarr;</button>
+    </div>
+  </div>
+
+  <!-- 閉じるボタン（必要に応じて追加） -->
+  <button onclick="closeHelp()" style="margin-top: 10px;">閉じる</button>
+</div>
+
+  <!-- タブ -->
+  <div id="tabButtons">
+    <button data-tab="yakisoba">登別閻魔焼きそば</button>
+    <button data-tab="brand">登別ブランド品</button>
+    <button data-tab="ainu">アイヌ文化施設・史跡</button>
+  </div>
+
+  <!-- スタンプ表示コンテナ -->
+  <main id="stampContainer"></main>
+
+  <!-- ポップアップ -->
+  <div id="popup" class="popup hidden">
+    <img id="popupImage" src="" alt="店舗画像">
+    <p id="popupStoreName"></p>
+    <p id="popupPhone"></p>
+    <p id="popupZip"></p>
+    <p id="popupAddress"></p>
+    <p id="popupDate"></p>
+    <button onclick="closePopup()">閉じる</button>
+  </div>
+
+  <!-- QR読み取りページへの固定ボタン -->
+  <a href="qr.html" id="qrFixedButton">
+    <img src="png/qr_button.png" alt="QR読み取り">
+  </a>
+
+  <!-- JavaScript -->
+  <script src="home.js"></script>
+</body>
+</html>
