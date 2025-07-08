@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QRリーダー</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f0f0f0;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 400px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: #007AFF;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .camera-area {
+            position: relative;
+            aspect-ratio: 1;
+            background: #000;
+            overflow: hidden;
+        }
+        
+        #video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .scan-frame {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 200px;
+            height: 200px;
+            border: 2px solid #00ff00;
+            border-radius: 8px;
+            opacity: 0.8;
+        }
+        
+        .controls {
+            padding: 20px;
+            text-align: center;
+        }
+        
+        button {
+            background: #007AFF;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 5px;
+            transition: background 0.2s;
+        }
+        
+        button:hover {
+            background: #0056CC;
+        }
+        
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .status {
+            padding: 10px 20px;
+            text-align: center;
+            font-size: 14px;
+            background: #f8f9fa;
+            border-top: 1px solid #dee2e6;
+        }
+        
+        .result {
+            padding: 20px;
+            background: #e8f5e8;
+            border-top: 1px solid #c3e6c3;
+            display: none;
+        }
+        
+        .result-text {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            word-break: break-all;
+            font-family: monospace;
+            font-size: 14px;
+            margin: 10px 0;
+        }
+        
+        @media (max-width: 480px) {
+            body { padding: 10px; }
+            .scan-frame { width: 150px; height: 150px; }
+            button { padding: 10px 20px; font-size: 14px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">QRコードリーダー</div>
+        
+        <div class="camera-area">
+            <video id="video" autoplay muted playsinline></video>
+            <div class="scan-frame"></div>
+        </div>
+        
+        <div class="controls">
+            <button id="stopBtn">停止</button>
+        </div>
+        
+        <div class="status" id="status">カメラを起動中...</div>
+        
+        <div class="result" id="result">
+            <strong>読み取り結果:</strong>
+            <div class="result-text" id="resultText"></div>
+            <button onclick="copyResult()">コピー</button>
+            <button onclick="hideResult()">閉じる</button>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qr-scanner/1.4.2/qr-scanner.umd.min.js"></script>
+    
+    <script>
+        let qrScanner = null;
+        let isScanning = false;
+        
+        const video = document.getElementById('video');
+        const stopBtn = document.getElementById('stopBtn');
+        const status = document.getElementById('status');
+        const result = document.getElementById('result');
+        const resultText = document.getElementById('resultText');
+        
+        stopBtn.onclick = stopScanning;
+        
+        // ページ読み込み時に自動でカメラ起動
+        window.addEventListener('load', startScanning);
+        
+        async function startScanning() {
+            try {
+                status.textContent = 'カメラを起動中...';
+                
+                qrScanner = new QrScanner(
+                    video,
+                    result => showResult(result.data),
+                    { highlightScanRegion: false }
+                );
+                
+                await qrScanner.start();
+                
+                isScanning = true;
+                stopBtn.disabled = false;
+                status.textContent = 'QRコードをスキャンしてください';
+                
+            } catch (error) {
+                status.textContent = 'カメラの起動に失敗しました';
+                console.error(error);
+            }
+        }
+        
+        function stopScanning() {
+            if (qrScanner) {
+                qrScanner.stop();
+                qrScanner.destroy();
+                qrScanner = null;
+            }
+            
+            isScanning = false;
+            stopBtn.disabled = true;
+            status.textContent = 'スキャンを停止しました';
+        }
+        
+        function showResult(data) {
+            resultText.textContent = data;
+            result.style.display = 'block';
+            status.textContent = '読み取り完了！';
+        }
+        
+        function copyResult() {
+            navigator.clipboard.writeText(resultText.textContent).then(() => {
+                alert('コピーしました！');
+            });
+        }
+        
+        function hideResult() {
+            result.style.display = 'none';
+        }
+    </script>
+</body>
+</html>
