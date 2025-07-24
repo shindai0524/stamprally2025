@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="https://glitch.com/favicon.ico" />
+    <link rel="stylesheet" href="index_style.css" />
+    <script
+      src="https://code.jquery.com/jquery-3.7.0.min.js"
+      integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g="
+      crossorigin="anonymous"
+    ></script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="title">
+        <img src="https://www.sapporo.coop/assets/img/common/logo.svg" />
+      </div>
+
+      <div class="start-btn">
+        <img
+          id="start-button"
+          src="https://cdn.glitch.global/181ed6db-f6a0-4bf6-b0cd-9267edda932c/%E3%82%B9%E3%82%BF%E3%83%BC%E3%83%88%E3%83%9C%E3%82%BF%E3%83%B3_80px.png?v=1689044088845"
+          style="cursor: pointer;"
+        />
+      </div>
+
+      <div class="char">
+        <img
+          src="https://www.sapporo.coop/about/images/cassette_3_img03_20230126_171028.png"
+        />
+      </div>
+    </div>
+
+    <script>
+      /**
+       * JWTのペイロードをデコードするヘルパー関数
+       */
+      function parseJwt(token) {
+        try {
+          const base64Url = token.split(".")[1];
+          const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+          const jsonPayload = decodeURIComponent(
+            atob(base64)
+              .split("")
+              .map(function (c) {
+                return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+              })
+              .join("")
+          );
+          return JSON.parse(jsonPayload);
+        } catch (e) {
+          return null;
+        }
+      }
+
+      // スタートボタンの要素を取得
+      const startButton = document.getElementById("start-button");
+
+      // ボタンにクリックイベントリスナーを追加
+      startButton.addEventListener("click", () => {
+        // ローカルストレージからトークンを取得 (キー名は'jwt_token'と仮定)
+        const token = localStorage.getItem("jwt_token");
+
+        // 1. トークンが存在しない場合 -> ログインページへ
+        if (!token) {
+          alert("ログインが必要です。ログインページに移動します。");
+          window.location.href = "login.html"; // ログインページのURLに適宜変更してください
+          return;
+        }
+
+        const payload = parseJwt(token);
+
+        // 2. トークンが不正、または有効期限が切れている場合 -> ログアウト
+        // payload.expは秒単位、Date.now()はミリ秒単位なので、1000倍して比較
+        if (!payload || payload.exp * 1000 < Date.now()) {
+          localStorage.removeItem("jwt_token"); // 無効なトークンを削除
+          alert("セッションがタイムアウトしました。再度ログインしてください。");
+          window.location.href = "login.html"; // ログインページのURLに適宜変更してください
+          return;
+        }
+
+        // 3. トークンが有効な場合 -> start.htmlへ移動
+        window.location.href = "start.html";
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>ログイン</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body{ font: 14px sans-serif; }
+        .wrapper{ width: 400px; padding: 20px; margin: 100px auto; }
+        .invalid-feedback { 
+            display: none; 
+            width: 100%; 
+            margin-top: .25rem; 
+            font-size: 80%; 
+            color: #dc3545; 
+        }
+        /* ★★★ ここからが修正点 ★★★ */
+        .is-invalid ~ .invalid-feedback,
+        .input-group ~ .invalid-feedback { 
+            display: block; 
+        }
+        /* ★★★ ここまでが修正点 ★★★ */
+
+        .wrapper h2 {
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;  
+        }
+
+        .submit-btn-area {
+            text-align: center;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <h2>ログイン</h2>
+        <form id="login-form" action="php/login.php" method="post" novalidate>
+            <p>メールアドレス</p>
+            <div class="form-group">
+                <input type="text" name="email" class="form-control" placeholder="メールアドレス">
+                <span class="invalid-feedback"></span>
+            </div>
+            <p>パスワード</p>
+            <div class="form-group">
+                <div class="input-group">
+                    <input type="password" name="password" id="password" class="form-control" placeholder="パスワード">
+                    <div class="input-group-append">
+                        <span class="input-group-text" style="cursor: pointer;">
+                            <i class="fas fa-eye" id="password-toggle-icon"></i>
+                        </span>
+                    </div>
+                </div>
+                <span class="invalid-feedback"></span>
+            </div>
+            <div class="form-group submit-btn-area">
+                <input type="submit" class="btn btn-primary" value="ログイン">
+            </div>
+            <a href="register.html">アカウントをお持ちでない方はこちら</a>
+        </form>
+        <div id="response-message" class="mt-3"></div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const passwordInput = document.getElementById('password');
+        const toggleIcon = document.getElementById('password-toggle-icon');
+        if (toggleIcon) {
+            toggleIcon.parentElement.addEventListener('click', function () {
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                toggleIcon.classList.toggle('fa-eye');
+                toggleIcon.classList.toggle('fa-eye-slash');
+            });
+        }
+
+        const loginForm = document.getElementById('login-form');
+        const responseMessage = document.getElementById('response-message');
+
+        loginForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // ★★★ ここからが修正・追加箇所 ★★★
+            // 以前のエラー表示をすべてクリアする
+            responseMessage.innerHTML = '';
+            responseMessage.className = 'mt-3';
+
+            document.querySelectorAll('.is-invalid').forEach(function(element) {
+                element.classList.remove('is-invalid');
+            });
+            document.querySelectorAll('.invalid-feedback').forEach(function(element) {
+                element.textContent = '';
+            });
+            // ★★★ ここまでが修正・追加箇所 ★★★
+
+            const formData = new FormData(loginForm);
+            
+            fetch(loginForm.action, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                const contentType = response.headers.get("content-type");
+                if (contentType && contentType.indexOf("application/json") !== -1) {
+                    return response.json();
+                } else {
+                    return response.text().then(text => { throw new Error("サーバーから予期しない応答がありました:\n" + text) });
+                }
+            })
+            .then(data => {
+                if (data.token) {
+                    localStorage.setItem('jwt_token', data.token);
+                    window.location.href = 'start.html';
+                } else if (data.errors) {
+                    Object.keys(data.errors).forEach(key => {
+                        const input = loginForm.querySelector(`[name="${key}"]`);
+                        if (input) {
+                            input.classList.add('is-invalid');
+                            const formGroup = input.closest('.form-group');
+                            const feedback = formGroup.querySelector('.invalid-feedback');
+                            if (feedback) {
+                                feedback.textContent = data.errors[key];
+                            }
+                        }
+                    });
+                } else {
+                    responseMessage.className = 'alert alert-danger';
+                    responseMessage.textContent = data.error || '不明なエラーが発生しました。';
+                }
+            })
+            .catch(error => {
+                responseMessage.className = 'alert alert-danger';
+                responseMessage.textContent = 'リクエスト中にエラーが発生しました。';
+                console.error('Error:', error);
+            });
+        });
+    });
+</script>
+</body>
+</html>

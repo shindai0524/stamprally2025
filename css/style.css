@@ -1,0 +1,40 @@
+/* css/style.css */
+
+body { 
+    font: 14px sans-serif; 
+}
+
+.wrapper { 
+    width: 400px; 
+    padding: 20px; 
+    margin: 100px auto; 
+}
+
+.wrapper h2 {
+    margin-bottom: 30px;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;  /* 少し調整しました */
+}
+
+.submit-btn-area {
+    text-align: center;
+}
+
+/* ログインページのパスワード表示アイコン用 */
+.input-group-append .input-group-text {
+    cursor: pointer;
+}
+
+/* エラーメッセージ用 */
+.invalid-feedback { 
+    display: none; 
+    width: 100%; 
+    margin-top: .25rem; 
+    font-size: 80%; 
+    color: #dc3545; 
+}
+.is-invalid ~ .invalid-feedback { 
+    display: block; 
+}
