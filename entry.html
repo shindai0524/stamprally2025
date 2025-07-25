@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>景品応募フォーム</title>
+  <link rel="stylesheet" href="entry.css">
+</head>
+<body>
+  <!-- ホームに戻る（固定） -->
+  <button id="backButton" onclick="location.href='home.html'">← 戻る</button>
+
+  <div class="container">
+    <h2>応募者情報</h2>
+    <form id="userForm">
+      <input type="text" id="name" placeholder="氏名" required>
+      <input type="tel" id="tel" placeholder="電話番号" required>
+      <input type="text" id="zip" placeholder="郵便番号" required>
+      <input type="text" id="address" placeholder="住所" required>
+      <input type="email" id="email" placeholder="メールアドレス" required>
+    </form>
+
+    <h2>景品一覧</h2>
+    <div id="prizes">
+      <div class="prize-card">
+        <h3>参加賞</h3>
+        <img src="img/participation.png" alt="参加賞">
+        <p>【条件】やきそばorブランド推奨品2つ＋アイヌ文化施設1つ</p>
+        <button class="entry-button" data-prize="participation">応募する</button>
+      </div>
+
+      <div class="prize-card">
+        <h3>抽選賞B</h3>
+        <img src="img/prize_b.png" alt="抽選賞B">
+        <p>【条件】参加賞＋アイヌ文化施設さらに1つ</p>
+        <button class="entry-button" data-prize="b">応募する</button>
+      </div>
+
+      <div class="prize-card">
+        <h3>抽選賞A</h3>
+        <img src="img/prize_a.png" alt="抽選賞A">
+        <p>【条件】B賞＋やきそばorブランド1つ＋アイヌ文化施設1つ</p>
+        <button class="entry-button" data-prize="a">応募する</button>
+      </div>
+
+      <div class="prize-card">
+        <h3>特賞（登別温泉宿泊券）</h3>
+        <img src="img/hotel.png" alt="特賞">
+        <p>【条件】やきそばorブランド2つ＋アイヌ1つ＋合計9個</p>
+        <button class="entry-button" data-prize="special">応募する</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="entry.js"></script>
+</body>
+</html>

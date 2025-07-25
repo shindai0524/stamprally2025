@@ -121,7 +121,7 @@ const stampList = [
   { id: 27, name: "肉のあさひ", tel: "0143-yy-001", zip: "059-0464", address: "北海道登別市登別東町2丁目15−11", image: "images/stamp20.png", storeImage: "images/store20.png", course: "brand" },
   { id: 28, name: "わかさいも本舗登別東店", tel: "0143-yy-001", zip: "059-0463", address: "北海道登別市中登別町96−6", image: "images/stamp20.png", storeImage: "images/store20.png", course: "brand" },
   { id: 29, name: "登別観光交流センター「ヌプル」(登別ブランド)", tel: "0143-yy-001", zip: "059-0466", address: "北海道登別市登別港町1丁目4番地9", image: "images/stamp20.png", storeImage: "images/store20.png", course: "brand" },
-  { id: 30, name: "望月製麺所", tel: "0143-yy-001", zip: "059-0101", address: "登別市ブランド1丁目", image: "images/stamp20.png", storeImage: "images/store20.png", course: "brand" },
+  { id: 30, name: "望月製麺所", tel: "0143-yy-001", zip: "059-0001", address: "北海道登別市新栄町1-14", image: "images/stamp20.png", storeImage: "images/store20.png", course: "brand" },
   { id: 31, name: "かめやアーニス店", tel: "0143-yy-001", zip: "059-0012", address: "北海道登別市中央町4丁目11", image: "images/stamp20.png", storeImage: "images/store20.png", course: "brand" },
   { id: 32, name: "のぼりべつブランドショップ", tel: "0143-yy-001", zip: "059-0012", address: "北海道登別市中央町4丁目11", image: "images/stamp20.png", storeImage: "images/store20.png", course: "brand" },
   { id: 33, name: "道南平塚食品", tel: "0143-yy-001", zip: "059-0013", address: "北海道登別市幌別町4-12-1", image: "images/stamp20.png", storeImage: "images/store20.png", course: "brand" },
