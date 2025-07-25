@@ -1,7 +1,8 @@
 <?php
 // db.php
 
-require_once __DIR__.'/config.php';
+// db.phpはapp_filesの中にあるので、同じ階層のconfig.phpを読み込む
+require_once __DIR__.'/../app_files/config.php';
 
 /**
  * データベース接続を確立し、返す関数

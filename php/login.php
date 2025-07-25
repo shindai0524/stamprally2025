@@ -8,6 +8,7 @@ require_once __DIR__ . '/../../app_files/db.php';
 
 use Firebase\JWT\JWT;
 
+
 $conn = get_db_connection();
 
 // レートリミットのロジック
@@ -31,6 +32,7 @@ if ($failures['failure_count'] >= 5) {
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     header("Content-Type: application/json");
+
 
     $errors = validation($_POST, false, $conn);
 

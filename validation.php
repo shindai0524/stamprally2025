@@ -22,7 +22,7 @@ function validation($datas, $confirm = true, $conn = null)
         // メールアドレスの重複チェック
         if ($conn && empty($errors['email'])) {
             try {
-                $stmt = $conn->prepare("SELECT id FROM users WHERE username = ?");
+                $stmt = $conn->prepare("SELECT id FROM users WHERE email = ?");
                 $stmt->bind_param("s", $datas['email']);
                 $stmt->execute();
                 $stmt->store_result();
