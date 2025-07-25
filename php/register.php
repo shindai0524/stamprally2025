@@ -1,33 +1,30 @@
 <?php
 // php/register.php
 
-require_once __DIR__ . '/../config.php';
-require_once __DIR__ . '/../validation.php';
-require_once __DIR__ . '/../db.php';
+require_once __DIR__ . '/../../app_files/config.php';
+require_once __DIR__ . '/../../app_files/validation.php';
+require_once __DIR__ . '/../../app_files/db.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     header("Content-Type: application/json; charset=UTF-8");
 
-    // 1. 最初にデータベース接続を確立します
     $conn = get_db_connection();
-
-    // 2. バリデーション関数に確立した $conn を渡します
     $errors = validation($_POST, true, $conn);
 
     if (!empty($errors)) {
         http_response_code(400);
         echo json_encode(['errors' => $errors]);
-        $conn->close(); // エラーがあっても接続は閉じる
+        $conn->close();
         exit;
     }
     
-    $username = trim($_POST['email']);
+    $email = trim($_POST['email']);
     $password = $_POST['password'];
     $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
-    // バリデーションで重複チェック済みなので、ここでは単純にINSERTします
-    $stmt = $conn->prepare("INSERT INTO users (username, password) VALUES (?, ?)");
-    $stmt->bind_param("ss", $username, $hashed_password);
+    // ★★★ 修正点: カラム名を username から email に変更 ★★★
+    $stmt = $conn->prepare("INSERT INTO users (email, password) VALUES (?, ?)");
+    $stmt->bind_param("ss", $email, $hashed_password);
 
     if ($stmt->execute()) {
         http_response_code(201);
