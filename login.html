@@ -3,61 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <title>ログイン</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <style>
-        body{ font: 14px sans-serif; }
-        .wrapper{ width: 400px; padding: 20px; margin: 100px auto; }
-        .invalid-feedback { display: none; width: 100%; margin-top: .25rem; font-size: 80%; color: #dc3545; }
-        .is-invalid ~ .invalid-feedback,
-        .input-group.is-invalid ~ .invalid-feedback { display: block; }
-        .input-group.is-invalid .form-control { border-color: #dc3545; }
-    </style>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <div class="wrapper">
-        <h2>ログイン</h2>
-        <form id="login-form" action="/test/php/login.php" method="post" novalidate>
-            <div class="form-group">
-                <label>メールアドレス</label>
-                <input type="text" name="email" class="form-control" placeholder="メールアドレス">
-                <span class="invalid-feedback"></span>
-            </div>
-            <div class="form-group">
-                <label>パスワード</label>
-                <div class="input-group">
-                    <input type="password" name="password" id="password" class="form-control" placeholder="パスワード">
-                    <div class="input-group-append">
-                        <span class="input-group-text" style="cursor: pointer;">
+    <div class="background">
+        <div class="container">
+            <img src="image/logo.png" alt="ロゴ" class="logo">
+                <img src="image/title_login.png" alt="新規登録" class="title">    
+                    <form id="login-form" action="php/login.php" method="post" novalidate>
+                        <div class="form-group">
+                            <input type="text" name="email" id="email-input" class="form-control" placeholder="メールアドレス">
+                            <span class="invalid-feedback"></span>
+                        </div>
+                        <div class="form-group">
+                            <input type="password" name="password" id="password-input" class="form-control" placeholder="パスワード">
                             <i class="fas fa-eye" id="password-toggle-icon"></i>
-                        </span>
-                    </div>
+                            <span class="invalid-feedback"></span>
+                        </div>
+                            <img src="image/login_button.png" alt="ログイン" id="login-button" class="submit-button">
+                    </form>
+
+                    <a href="register.html" class="link-to-register"> <img src="image/new_registration_is_here.png" alt="新規登録はこちら"> </a>
+                    <div id="response-message" class="mt-3"></div>
                 </div>
-                <span class="invalid-feedback"></span>
-            </div>
-            <div class="form-group text-center">
-                <input type="submit" class="btn btn-primary" value="ログイン">
-            </div>
-            <p class="text-center"><a href="register.html">アカウントをお持ちでない方はこちら</a></p>
-        </form>
-        <div id="response-message" class="mt-3"></div>
+        </div>
     </div>
 
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const passwordInput = document.getElementById('password');
-        const toggleIcon = document.getElementById('password-toggle-icon');
-        if (toggleIcon) {
-            toggleIcon.parentElement.addEventListener('click', function () {
-                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-                passwordInput.setAttribute('type', type);
-                toggleIcon.classList.toggle('fa-eye');
-                toggleIcon.classList.toggle('fa-eye-slash');
-            });
-        }
+        document.addEventListener('DOMContentLoaded', function() {
+            // IDを正しく 'password-input' に修正
+            const passwordInput = document.getElementById('password-input');
+            const toggleIcon = document.getElementById('password-toggle-icon');
+
+            if (toggleIcon) {
+                // クリックイベントの対象をアイコン自体に変更
+                toggleIcon.addEventListener('click', function () {
+                    // パスワードの表示/非表示を切り替え
+                    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                    passwordInput.setAttribute('type', type);
+                    
+                    // Font Awesomeのアイコンクラスを切り替え
+                    this.classList.toggle('fa-eye');
+                    this.classList.toggle('fa-eye-slash');
+                });
+            }
 
         const loginForm = document.getElementById('login-form');
         const responseMessage = document.getElementById('response-message');
+
+        const loginButton = document.getElementById('login-button');
+        if (loginButton) {
+            loginButton.addEventListener('click', function() {
+                // loginFormの送信イベントを強制的に実行する
+                loginForm.dispatchEvent(new Event('submit', { cancelable: true }));
+            });
+        }
 
         loginForm.addEventListener('submit', function(e) {
             e.preventDefault();

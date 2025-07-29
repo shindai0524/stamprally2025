@@ -6,29 +6,43 @@ html, body {
 }
 
 body {
-  background-image: url('png/home_back.png');
+  background-image: url('image/3-2.png');
   background-size: cover;
-  background-position: center;
+  background-position: center top 110px;
   background-repeat: no-repeat;
   padding-top: env(safe-area-inset-top);
 }
 
+.top-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 150px; /* 必要な高さ */
+  background-image: url('image/3-1_装飾.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center top;
+  z-index: -1;
+}
+
+
 /* ヘッダー */
 #logoHeader {
   position: fixed;
-  top: 5px;
+  top: 15px;
   left: 55px;
   z-index: 100;
 }
 
 #logoHeader img {
-  height: 70px;
+  height: 80px;
   width: auto;
 }
 
 header {
   position: fixed;
-  top: 10px;
+  top: 35px;
   right: 35px;
   display: flex;
   flex-direction: row-reverse;
@@ -240,8 +254,8 @@ header img {
 /* 固定QRボタン */
 #qrFixedButton {
   position: fixed;
-  bottom: 20px;
-  right: 20px;
+  bottom: 50px;
+  right: 50px;
   z-index: 120;
   width: 60px;
   height: 60px;
@@ -249,8 +263,8 @@ header img {
 }
 
 #qrFixedButton img {
-  width: 100%;
-  height: 100%;
+  width: 150%;
+  height: 150%;
   object-fit: contain;
 }
 
