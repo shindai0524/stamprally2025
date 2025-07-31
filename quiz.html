@@ -8,9 +8,11 @@
 </head>
 <body>
   <div id="quizContainer" class="quiz-container">
+    <img src="image/question_icon.png" alt="Question" class="question-icon">
+
     <div id="quizSection">
       <h2 id="quizQuestion">問題文</h2>
-      <div id="quizOptions" class="quiz-options"></div>
+      <div id="quizOptions" class="choices"></div>
     </div>
 
     <div id="correctSection" class="result-section hidden">
@@ -44,23 +46,23 @@
     　{
         id: 22, // stamp ID
         course: "brand",
-        question: "",
-        options: ["", "", ""],
+        question: "答えは1",
+        options: ["1", "2", "3"],
         answer: 0
       },
     　{
         id: 23, // stamp ID
         course: "brand",
-        question: "",
-        options: ["", "", ""],
+        question: "答えは2",
+        options: ["1", "2", "3"],
         answer: 1
       },
       {
         id: 24, // stamp ID
         course: "brand",
-        question: "",
-        options: ["", "", ""],
-        answer: 1
+        question: "答えは3",
+        options: ["1", "2", "3"],
+        answer: 2
       },
       {
         id: 25, // stamp ID
@@ -239,7 +241,7 @@
       }
     ];
 
-    const params = new URLSearchParams(window.location.search);
+     const params = new URLSearchParams(window.location.search);
     const quizId = parseInt(params.get("id"));
     const question = questions.find(q => q.id === quizId);
 
@@ -264,7 +266,8 @@
         question.options.forEach((opt, index) => {
           const btn = document.createElement("button");
           btn.textContent = opt;
-          btn.className = "option-button";
+          // ↓↓↓ ここを "choice" に修正 ↓↓↓
+          btn.className = "choice"; 
           btn.onclick = () => checkAnswer(index);
           quizOptions.appendChild(btn);
         });
@@ -273,7 +276,6 @@
 
     function checkAnswer(selected) {
       if (selected === question.answer) {
-        // 正解: localStorage に保存
         const obtained = JSON.parse(localStorage.getItem("obtainedStamps")) || {};
         obtained[`stamp${question.id}`] = {
           date: new Date().toLocaleString()

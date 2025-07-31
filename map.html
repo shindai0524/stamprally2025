@@ -495,14 +495,41 @@
       return container;
     }
 
-    const clusterRenderer = {
-      render: ({ count, position }) => {
-        const size = count < 10 ? 45 : count < 25 ? 55 : 65;
-        const fontSize = count < 10 ? 14 : count < 25 ? 16 : 18;
-        const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}"><g filter="url(#cluster-shadow)"><circle cx="${size/2}" cy="${size/2}" r="${size/2-3}" fill="#ff6b6b" stroke="rgba(255,255,255,0.8)" stroke-width="4" /><text x="50%" y="50%" dominant-baseline="central" text-anchor="middle" font-family="Arial, sans-serif" font-size="${fontSize}px" font-weight="bold" fill="white">${count}</text></g></svg>`;
-        return new google.maps.Marker({ position, icon: { url: 'data:image/svg+xml;base64,' + btoa(svg), scaledSize: new google.maps.Size(size, size), anchor: new google.maps.Point(size/2, size/2) }, zIndex: 999, });
-      }
-    };
+  const clusterRenderer = {
+    render: ({ count, position }) => {
+    const size = count < 10 ? 45 : count < 25 ? 55 : 65;
+    const fontSize = count < 10 ? 14 : count < 25 ? 16 : 18;
+
+    // ★★★ フィルターの定義(<defs>...</defs>)をSVGコード内に追加 ★★★
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
+      <defs>
+        <filter id="cluster-shadow" height="130%">
+          <feGaussianBlur in="SourceAlpha" stdDeviation="2"/>
+          <feOffset dx="0" dy="1" result="offsetblur"/>
+          <feComponentTransfer><feFuncA type="linear" slope="0.6"/></feComponentTransfer>
+          <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+      <g filter="url(#cluster-shadow)">
+        <circle cx="${size/2}" cy="${size/2}" r="${size/2-3}" fill="#ff6b6b" stroke="rgba(255,255,255,0.8)" stroke-width="4" />
+        <text x="50%" y="50%" dominant-baseline="central" text-anchor="middle" font-family="Arial, sans-serif" font-size="${fontSize}px" font-weight="bold" fill="white">${count}</text>
+      </g>
+    </svg>`;
+    
+    // ★★★ 念のため、btoaの処理を安全なものに統一 ★★★
+    const iconUrl = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svg)));
+
+    return new google.maps.Marker({
+      position,
+      icon: {
+        url: iconUrl, // 修正したURLを使用
+        scaledSize: new google.maps.Size(size, size),
+        anchor: new google.maps.Point(size / 2, size / 2)
+      },
+      zIndex: 999,
+    });
+  }
+};
 
     function updateSpotList(searchTerm = '') {
       const spotListEl = document.getElementById('spotList');

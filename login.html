@@ -4,112 +4,117 @@
     <meta charset="UTF-8">
     <title>ログイン</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
+    <!-- Font Awesome for eye icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
     <div class="background">
         <div class="container">
             <img src="image/logo.png" alt="ロゴ" class="logo">
-                <img src="image/title_login.png" alt="新規登録" class="title">    
-                    <form id="login-form" action="php/login.php" method="post" novalidate>
-                        <div class="form-group">
-                            <input type="text" name="email" id="email-input" class="form-control" placeholder="メールアドレス">
-                            <span class="invalid-feedback"></span>
-                        </div>
-                        <div class="form-group">
-                            <input type="password" name="password" id="password-input" class="form-control" placeholder="パスワード">
-                            <i class="fas fa-eye" id="password-toggle-icon"></i>
-                            <span class="invalid-feedback"></span>
-                        </div>
-                            <img src="image/login_button.png" alt="ログイン" id="login-button" class="submit-button">
-                    </form>
-
-                    <a href="register.html" class="link-to-register"> <img src="image/new_registration_is_here.png" alt="新規登録はこちら"> </a>
-                    <div id="response-message" class="mt-3"></div>
+            <img src="image/title_login.png" alt="ログイン" class="title">    
+            <form id="login-form" action="php/login.php" method="post" novalidate>
+                <div class="form-group">
+                    <input type="text" name="email" id="email-input" class="form-control" placeholder="メールアドレス">
+                    <span class="invalid-feedback"></span>
                 </div>
+                <div class="form-group">
+                    <div class="password-input-wrapper">
+                        <input type="password" name="password" id="password-input" class="form-control" placeholder="パスワード">
+                        <button type="button" class="password-toggle-btn" id="password-toggle">
+                            <i class="far fa-eye" id="eye-icon"></i>
+                        </button>
+                    </div>
+                    <span class="invalid-feedback"></span>
+                </div>
+                <img src="image/login_button.png" alt="ログイン" id="login-button" class="submit-button">
+            </form>
+            <a href="register.html" class="link-to-register"> 
+                <img src="image/new_registration_is_here.png" alt="新規登録はこちら"> 
+            </a>
+            <div id="response-message" class="mt-3"></div>
         </div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // IDを正しく 'password-input' に修正
+            const loginForm = document.getElementById('login-form');
+            const responseMessage = document.getElementById('response-message');
             const passwordInput = document.getElementById('password-input');
-            const toggleIcon = document.getElementById('password-toggle-icon');
+            const passwordToggle = document.getElementById('password-toggle');
+            const eyeIcon = document.getElementById('eye-icon');
 
-            if (toggleIcon) {
-                // クリックイベントの対象をアイコン自体に変更
-                toggleIcon.addEventListener('click', function () {
-                    // パスワードの表示/非表示を切り替え
-                    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-                    passwordInput.setAttribute('type', type);
-                    
-                    // Font Awesomeのアイコンクラスを切り替え
-                    this.classList.toggle('fa-eye');
-                    this.classList.toggle('fa-eye-slash');
+            // パスワード表示/非表示の切り替え
+            if (passwordToggle) {
+                passwordToggle.addEventListener('click', function() {
+                    if (passwordInput.type === 'password') {
+                        passwordInput.type = 'text';
+                        eyeIcon.classList.remove('fa-eye');
+                        eyeIcon.classList.add('fa-eye-slash');
+                    } else {
+                        passwordInput.type = 'password';
+                        eyeIcon.classList.remove('fa-eye-slash');
+                        eyeIcon.classList.add('fa-eye');
+                    }
                 });
             }
 
-        const loginForm = document.getElementById('login-form');
-        const responseMessage = document.getElementById('response-message');
+            const loginButton = document.getElementById('login-button');
+            if (loginButton) {
+                loginButton.addEventListener('click', function() {
+                    loginForm.dispatchEvent(new Event('submit', { cancelable: true }));
+                });
+            }
 
-        const loginButton = document.getElementById('login-button');
-        if (loginButton) {
-            loginButton.addEventListener('click', function() {
-                // loginFormの送信イベントを強制的に実行する
-                loginForm.dispatchEvent(new Event('submit', { cancelable: true }));
-            });
-        }
+            loginForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                responseMessage.innerHTML = '';
+                responseMessage.className = 'mt-3';
+                document.querySelectorAll('.is-invalid').forEach(el => {
+                    el.classList.remove('is-invalid');
+                    let formGroup = el.closest('.form-group');
+                    if (formGroup) {
+                        let feedback = formGroup.querySelector('.invalid-feedback');
+                        if (feedback) feedback.textContent = '';
+                    }
+                });
+                document.querySelectorAll('.input-group.is-invalid').forEach(el => el.classList.remove('is-invalid'));
 
-        loginForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            responseMessage.innerHTML = '';
-            responseMessage.className = 'mt-3';
-            document.querySelectorAll('.is-invalid').forEach(el => {
-                el.classList.remove('is-invalid');
-                let formGroup = el.closest('.form-group');
-                if (formGroup) {
-                    let feedback = formGroup.querySelector('.invalid-feedback');
-                    if (feedback) feedback.textContent = '';
-                }
-            });
-            document.querySelectorAll('.input-group.is-invalid').forEach(el => el.classList.remove('is-invalid'));
-
-            const formData = new FormData(loginForm);
-            
-            fetch(loginForm.action, { method: 'POST', body: formData })
-            .then(response => response.json())
-            .then(data => {
-                if (data.token) {
-                    localStorage.setItem('jwt_token', data.token);
-                    window.location.href = 'start.html';
-                } else if (data.errors) {
-                    Object.keys(data.errors).forEach(key => {
-                        const input = loginForm.querySelector(`[name="${key}"]`);
-                        if (input) {
-                            input.classList.add('is-invalid');
-                            if (input.parentElement.classList.contains('input-group')) {
-                                input.parentElement.classList.add('is-invalid');
+                const formData = new FormData(loginForm);
+                
+                fetch(loginForm.action, { method: 'POST', body: formData })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.token) {
+                        localStorage.setItem('jwt_token', data.token);
+                        window.location.href = 'start.html';
+                    } else if (data.errors) {
+                        Object.keys(data.errors).forEach(key => {
+                            const input = loginForm.querySelector(`[name="${key}"]`);
+                            if (input) {
+                                input.classList.add('is-invalid');
+                                if (input.parentElement.classList.contains('input-group')) {
+                                    input.parentElement.classList.add('is-invalid');
+                                }
+                                const formGroup = input.closest('.form-group');
+                                const feedback = formGroup.querySelector('.invalid-feedback');
+                                if (feedback) {
+                                    feedback.textContent = data.errors[key];
+                                }
                             }
-                            const formGroup = input.closest('.form-group');
-                            const feedback = formGroup.querySelector('.invalid-feedback');
-                            if (feedback) {
-                                feedback.textContent = data.errors[key];
-                            }
-                        }
-                    });
-                } else {
+                        });
+                    } else {
+                        responseMessage.className = 'alert alert-danger';
+                        responseMessage.textContent = data.error || '不明なエラーが発生しました。';
+                    }
+                })
+                .catch(error => {
                     responseMessage.className = 'alert alert-danger';
-                    responseMessage.textContent = data.error || '不明なエラーが発生しました。';
-                }
-            })
-            .catch(error => {
-                responseMessage.className = 'alert alert-danger';
-                responseMessage.textContent = 'リクエスト中にエラーが発生しました。';
-                console.error('Error:', error);
+                    responseMessage.textContent = 'リクエスト中にエラーが発生しました。';
+                    console.error('Error:', error);
+                });
             });
         });
-    });
     </script>
 </body>
 </html>
