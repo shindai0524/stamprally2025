@@ -1,10 +1,16 @@
 window.onload = function () {
   const fields = ["name", "tel", "zip", "address", "email"];
+
   fields.forEach(id => {
-    const input = document.getElementById(id);
-    input.value = localStorage.getItem(id) || "";
-    input.addEventListener("input", () => {
-      localStorage.setItem(id, input.value);
+    const div = document.querySelector(`.input-field.${id}`);
+    let value = localStorage.getItem(id) || "";
+    div.setAttribute("data-value", value);
+    div.contentEditable = true;
+
+    div.addEventListener("input", () => {
+      const text = div.textContent;
+      localStorage.setItem(id, text);
+      div.setAttribute("data-value", text);
     });
   });
 

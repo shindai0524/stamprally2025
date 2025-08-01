@@ -7,47 +7,74 @@
   <link rel="stylesheet" href="entry.css">
 </head>
 <body>
-  <!-- ホームに戻る（固定） -->
-  <button id="backButton" onclick="location.href='home.html'">← 戻る</button>
+  <div class="top-background"></div>
+  <div class="header-image">
+  <img src="/image/entry_header.png" alt="ヘッダーに重ねる画像">
+  </div>
+
+  <button id="backButton" onclick="location.href='index.html'"></button>
 
   <div class="container">
-    <h2>応募者情報</h2>
     <form id="userForm">
-      <input type="text" id="name" placeholder="氏名" required>
-      <input type="tel" id="tel" placeholder="電話番号" required>
-      <input type="text" id="zip" placeholder="郵便番号" required>
-      <input type="text" id="address" placeholder="住所" required>
-      <input type="email" id="email" placeholder="メールアドレス" required>
+      <div class="input-wrapper">
+        <img src="/image/name.png" alt="氏名枠">
+        <input type="text" id="name" required>
+      </div>
+      <div class="input-wrapper">
+        <img src="/image/num_phone.png" alt="電話枠">
+        <input type="tel" id="tel" required>
+      </div>
+      <div class="input-wrapper">
+        <img src="/image/num_yubin.png" alt="郵便枠">
+        <input type="text" id="zip" required>
+      </div>
+      <div class="input-wrapper">
+        <img src="/image/address.png" alt="住所枠">
+        <input type="text" id="address" required>
+      </div>
+      <div class="input-wrapper">
+        <img src="/image/mail_address.png" alt="メール枠">
+        <input type="email" id="email" required>
+      </div>
     </form>
 
-    <h2>景品一覧</h2>
     <div id="prizes">
       <div class="prize-card">
-        <h3>参加賞</h3>
+        <img class="prize-overlay" src="/image/sanka_prize.png" alt="上部画像">
+        <br>
         <img src="img/participation.png" alt="参加賞">
-        <p>【条件】やきそばorブランド推奨品2つ＋アイヌ文化施設1つ</p>
-        <button class="entry-button" data-prize="participation">応募する</button>
-      </div>
+        <!-- 各賞のボタン部分の修正（共通） -->
+        <button class="entry-button" data-prize="participation">
+          <img src="/image/entry_button.png" alt="応募するボタン">
+        </button>
 
+      </div>
       <div class="prize-card">
         <h3>抽選賞B</h3>
         <img src="img/prize_b.png" alt="抽選賞B">
-        <p>【条件】参加賞＋アイヌ文化施設さらに1つ</p>
-        <button class="entry-button" data-prize="b">応募する</button>
-      </div>
+        <!-- 各賞のボタン部分の修正（共通） -->
+        <button class="entry-button" data-prize="b">
+          <img src="/image/entry_button.png" alt="応募するボタン">
+        </button>
 
+      </div>
       <div class="prize-card">
         <h3>抽選賞A</h3>
         <img src="img/prize_a.png" alt="抽選賞A">
-        <p>【条件】B賞＋やきそばorブランド1つ＋アイヌ文化施設1つ</p>
-        <button class="entry-button" data-prize="a">応募する</button>
-      </div>
+        <!-- 各賞のボタン部分の修正（共通） -->
+        <button class="entry-button" data-prize="a">
+          <img src="/image/entry_button.png" alt="応募するボタン">
+        </button>
 
+      </div>
       <div class="prize-card">
         <h3>特賞（登別温泉宿泊券）</h3>
         <img src="img/hotel.png" alt="特賞">
-        <p>【条件】やきそばorブランド2つ＋アイヌ1つ＋合計9個</p>
-        <button class="entry-button" data-prize="special">応募する</button>
+        <!-- 各賞のボタン部分の修正（共通） -->
+        <button class="entry-button" data-prize="special">
+          <img src="/image/entry_button.png" alt="応募するボタン">
+        </button>
+
       </div>
     </div>
   </div>

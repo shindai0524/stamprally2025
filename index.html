@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>スタンプラリー ホーム</title>
+  <link rel="stylesheet" href="home.css">
+</head>
+<body>
+  <!-- 固定ヘッダー背景 -->
+  <div class="top-background"></div>
+
+  <!-- ロゴ -->
+  <div id="logoHeader">
+    <img src="/image/logo.png" alt="ロゴ">
+  </div>
+
+  <!-- メニュー・ヘルプ -->
+  <header>
+    <button id="menuBtn"><img src="image/menu.png" alt="メニュー"></button>
+    <button id="helpBtn"><img src="/image/help.png" alt="ヘルプ"></button>
+  </header>
+
+  <!-- タブ -->
+  <div id="tabButtons">
+    <button data-tab="yakisoba">登別閻魔焼きそば</button>
+    <button data-tab="brand">登別ブランド品</button>
+    <button data-tab="ainu">アイヌ文化施設・史跡</button>
+  </div>
+
+  <!-- メニューリスト -->
+  <div id="menuList" class="hidden">
+    <button class="close-btn" onclick="menuList.classList.add('hidden')">
+      <img src="/image/close2.png" alt="閉じる">
+    </button>
+    <ul>
+      <li>
+        <a href="help.html">
+          <img src="/image/warning.png" alt="参加方法・問い合わせ">
+        </a>
+      </li>
+      <li>
+        <a href="map.html">
+          <img src="/image/go_map.png" alt="マップへ">
+        </a>
+      </li>
+      <li>
+        <a href="entry.html">
+          <img src="/image/go_entry.png" alt="応募フォームへ">
+        </a>
+      </li>
+    </ul>
+  </div>
+
+  <!-- ヘルプリスト -->
+  <div id="helpList" class="hidden">
+    <button class="close-btn" onclick="helpList.classList.add('hidden')">
+      <img src="/image/close2.png" alt="閉じる">
+    </button>
+    <ul>
+      <li>
+        <a href="#" onclick="openHelp('home')">
+          <img src="/image/help_home.png" alt="ホームの使い方">
+        </a>
+      </li>
+      <li>
+        <a href="#" onclick="openHelp('qr')">
+          <img src="/image/help_qr.png" alt="QRコード読み取りの使い方">
+        </a>
+      </li>
+    </ul>
+  </div>
+
+
+  <!-- ヘルプモーダル -->
+  <div id="helpModal" class="modal hidden">
+    <div class="help-modal-image-container">
+      <img id="helpImage" src="/image/help_modal.png" alt="ヘルプ画像">
+    </div>
+    <div class="help-controls-bottom">
+      <div class="help-arrow-wrapper">
+        <button id="prevHelpBtn" class="help-arrow-btn hidden">&larr;</button>
+      </div>
+      <div class="help-arrow-wrapper right">
+        <button id="nextHelpBtn" class="help-arrow-btn hidden">&rarr;</button>
+      </div>
+    </div>
+    <button onclick="closeHelp()" style="margin-top: 10px;">閉じる</button>
+  </div>
+
+  <!-- スタンプ表示 -->
+  <main id="stampContainer">
+    <!-- ここにスタンプ一覧がJavaScriptで描画される -->
+  </main>
+
+  <!-- ポップアップ -->
+  <div id="popup" class="popup hidden">
+    <img id="popupImage" src="" alt="店舗画像">
+    <p id="popupStoreName"></p>
+    <p id="popupPhone"></p>
+    <p id="popupZip"></p>
+    <p id="popupAddress"></p>
+    <p id="popupDate"></p>
+    <button onclick="closePopup()">閉じる</button>
+  </div>
+
+  <!-- QRボタン -->
+  <a href="qrscan.html" id="qrFixedButton">
+    <img src="image/code.png" alt="QR読み取り">
+  </a>
+
+  <!-- 左下キャラ -->
+  <div class="fixed-character">
+    <img src="/image/char.png" alt="キャラクター">
+  </div>
+
+  <script src="home.js"></script>
+</body>
+</html>
