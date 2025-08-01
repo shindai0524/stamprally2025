@@ -1,8 +1,8 @@
 <?php
 // auth.php
 
-require_once __DIR__.'/config.php';
-require_once __DIR__.'/vendor/autoload.php';
+require_once __DIR__.'/../app_files/config.php';
+require_once __DIR__.'/../app_files/vendor/autoload.php';
 
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;

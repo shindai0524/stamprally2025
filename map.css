@@ -1,0 +1,409 @@
+:root {
+  --font-family-base: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "メイリオ", Meiryo, sans-serif;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.15);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.2);
+  --color-all-bg: #4285F4;
+  --color-all-active: #3367D6;
+  --color-enma-bg: #AE00FF;
+  --color-enma-active: #8A00CC;
+  --color-brand-bg: #1E88E5;
+  --color-brand-active: #1565C0;
+  --color-ainu-bg: #43A047;
+  --color-ainu-active: #2E7D32;
+  --info-bg: #757575;
+  --info-text: #ffffff;
+  --info-link: #ffffff;
+  --info-link-border: rgba(255, 255, 255, 0.7);
+  --info-link-hover-bg: rgba(255, 255, 255, 0.15);
+}
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-family-base);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
+}
+#map {
+  height: 100vh;
+  width: 100%;
+}
+/* === 右上のフローティングロゴ === */
+.floating-logo {
+position: fixed;
+top: 20px;
+right: 20px;
+z-index: 1000; /* マップの上に表示 */
+pointer-events: none; /* ロゴがマップの操作を邪魔しないようにする */
+}
+.floating-logo img {
+display: block;
+width: 300px; /* ロゴの基本サイズ */
+height: auto;
+opacity: 0.9; /* 少しだけ透明にしてマップと馴染ませる */
+}
+
+/* === スマホ表示時の調整（メディアクエリ内） === */
+@media (max-width: 768px) {
+/* （既存のルール...） */
+
+/* ロゴの位置とサイズを調整 */
+.floating-logo {
+  top: 15px;
+  right: 15px;
+}
+.floating-logo img {
+  width: 190px; /* スマホでは少し小さくする */
+}
+}
+ .hamburger-btn {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    width: 56px;
+    height: 56px;
+    z-index: 1001;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background-image: url('image/4-8.png');
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: transparent;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+  }
+  .hamburger-btn:hover {
+    transform: scale(1.1); 
+  }
+  .hamburger-btn.is-active {
+    transform: rotate(180deg);
+  }
+  .fab-button {
+    position: fixed;
+    z-index: 998;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    box-shadow: var(--shadow-md);
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: transparent;
+    border: none;
+  }
+  .fab-button:hover {
+    transform: scale(1.05);
+    box-shadow: var(--shadow-lg);
+  }
+  .fab-button.bottom-right {
+    bottom: 25px;
+    right: 20px;
+  }
+  .fab-button.bottom-left {
+    bottom: 25px;
+    left: 20px;
+  }
+  .fab-button.reset-view-btn {
+    bottom: 95px;
+  }
+  .menu-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.4); z-index: 1000;
+    opacity: 0; visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s;
+  }
+  .menu-overlay.show {
+    opacity: 1; visibility: visible;
+  }
+
+  /* === サイドメニューのスタイル === */
+  .side-menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 280px;
+    height: 100%;
+    box-shadow: var(--shadow-lg);
+    transform: translateX(-100%);
+    transition: transform 0.3s ease-in-out;
+    z-index: 1002;
+    display: flex;
+    flex-direction: column;
+
+    /* 2. 背景画像を指定 */
+    background-image: url('image/4-1_メニュー画面.png'); /* 実際のファイル名に置き換えてください */
+    
+    /* 3. 画像の横幅を100%にし、縦は自動調整 */
+    background-size: 100% auto;
+
+    /* 4. 画像の繰り返しをなくし、上部を基準に配置 */
+    background-repeat: no-repeat;
+    background-position: top center;
+  }
+
+  .side-menu.open {
+    transform: translateX(0);
+  }
+  .side-menu-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    flex-shrink: 0; /* ヘッダーが縮まないようにする */
+  }
+  .side-menu-header h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 500;
+    width: 100%;
+    text-align: center;
+    /* ×ボタンの幅を考慮して中央寄せ */
+    padding-left: 32px; 
+  }
+  /* ▼ 閉じるボタンのデザインを変更 */
+  .side-menu-header .close-btn {
+    position: static; /* 位置の指定をリセット */
+    width: auto;
+    height: auto;
+    background: transparent; /* 背景の円を削除 */
+    border-radius: 0;
+    color: white;
+    font-size: 28px;
+    font-weight: 300;
+  }
+  .side-menu-header .close-btn:hover {
+    background: transparent;
+    color: rgba(255, 255, 255, 0.8);
+    transform: none; /* ホバー時の回転を解除 */
+  }
+  .side-menu-nav {
+    list-style: none;
+    padding: 20px; /* ボタンとメニュー端の余白 */
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* ボタン同士の間隔 */
+  }
+
+  /* 3つのボタンに共通のスタイル */
+  .side-menu-nav li button {
+    width: 85%;
+    height: 65px; /* ボタンの高さ。画像の比率に合わせて調整してください */
+    border: none;
+    background-color: transparent;
+    padding: 0;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    /* ボタンの背景画像が歪まないように設定 */
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    margin-left: 15px;
+  }
+  .side-menu-nav li button:hover {
+    transform: scale(1.03); /* マウスを乗せると少し拡大 */
+  }
+  /* ▼ 各ボタンに用意した画像を個別に指定 */
+  #menuOpenSearchBtn {
+    background-image: url('image/4-2.png');
+    margin-top: 10px;
+  }
+  #menuOpenFilterBtn {
+    background-image: url('image/4-3.png');
+    margin-top: 20px;
+  }
+  #menuTutorialBtn {
+    background-image: url('image/4-4.png');
+    margin-top: 15px;
+  }
+
+.modal-panel {
+  /* 位置や表示/非表示に関する設定はそのまま */
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.95); /* 表示アニメーション用にscaleを残す */
+  z-index: 2000;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  opacity: 0;
+  visibility: hidden;
+
+  /* ▼ デフォルトの背景や余白を再設定 */
+  background: #ffffff;
+  border-radius: 16px; /* 角丸 */
+  padding: 24px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  width: 90%;
+  max-width: 380px; /* デフォルトの最大幅 */
+  
+}
+
+/* 表示状態のスタイル */
+.modal-panel.show {
+  opacity: 1; 
+  visibility: visible; 
+  transform: translate(-50%, -50%) scale(1);
+}
+
+
+/* ▼ 画像モーダル専用のスタイル */
+#tutorialModal {
+  /* display:flexで中央寄せを実現 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  /* 基本スタイルを上書きして、枠と背景を消す */
+  background: none;
+  box-shadow: none;
+  padding: 0;
+  
+  /* 画像の大きさを指定 */
+  width: 88%;
+  max-width: 90%; 
+}
+
+/* 画像モーダル内の画像のサイズを修正 */
+#tutorialModal img {
+  width: 88%; /* パネルの幅に合わせる */
+  height: auto;
+  display: block;
+}
+
+.close-btn {
+  position: absolute; 
+  top: 22px; 
+  right:37px;
+  
+  /* ボタンのサイズ */
+  width: 20px; 
+  height: 20px; 
+  
+  /* 画像を指定 */
+  background-image: url('image/cross_btn.png'); /* ★ここに画像ファイル名を入れる */
+  background-size: contain; /* 画像がボタンに収まるように調整 */
+  background-position: center;
+  background-repeat: no-repeat;
+  
+  /* 元の背景色と枠線を削除 */
+  background-color: transparent;
+  border: none;
+
+  z-index: 10;
+  
+}
+
+/* フィルターボタンの共通スタイル */
+.filter-button {
+  /* ボタンのサイズ（画像のサイズに合わせて調整） */
+  height: 50px; 
+  
+  /* 画像の表示設定 */
+  background-size: contain; /* または cover */
+  background-position: center;
+  background-repeat: no-repeat;
+
+  /* ボタンのデフォルトスタイルを解除 */
+  background-color: transparent;
+  border: none;
+  padding: 0; /* 内側の余白をなくす */
+  
+  /* カーソルを指の形にする */
+  cursor: pointer;
+  
+  /* アニメーション */
+  transition: transform 0.2s ease;
+}
+
+/* 各ボタンに個別の画像を割り当て */
+.filter-button.all-courses {
+  background-image: url('image/all_course_btn.png'); /* ★「すべて表示」ボタンの画像 */
+}
+
+.filter-button.enma-course {
+  background-image: url('image/enma_course_btn.png'); /* ★「閻魔やきそば」ボタンの画像 */
+}
+
+.filter-button.brand-course {
+  background-image: url('image/brand_course_btn.png'); /* ★「ブランド推奨品」ボタンの画像 */
+}
+
+.filter-button.ainu-course {
+  background-image: url('image/ainu_course_btn.png'); /* ★「アイヌ文化」ボタンの画像 */
+}
+
+/* 選択されているボタンのスタイル */
+.filter-button.active {
+  transform: scale(1.03);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  border-radius: 12px; /* 影をきれいに見せるため */
+}
+
+
+  .tutorial-content { display: flex; flex-direction: column; gap: 16px; }
+  .tutorial-item { display: flex; align-items: flex-start; gap: 16px; }
+  .tutorial-icon { font-size: 28px; width: 40px; text-align: center; flex-shrink: 0; margin-top: -4px; }
+  .tutorial-text h4 { margin: 0 0 4px 0; font-size: 16px; color: #333; }
+  .tutorial-text p { margin: 0; font-size: 14px; color: #666; line-height: 1.5; }
+  .list-tabs {
+    display: flex; gap: 4px; margin: -10px -10px 16px -10px;
+    padding: 0 10px; border-bottom: 1px solid #eee; flex-shrink: 0; flex-wrap: wrap;
+  }
+  .list-tab {
+    padding: 10px; border: none; background-color: transparent;
+    font-size: 13px; font-weight: 500; cursor: pointer; color: #666;
+    border-bottom: 3px solid transparent; transition: all 0.2s ease;
+  }
+  .list-tab:hover { color: #000; background-color: #f5f5f5; }
+  .list-tab.active { color: var(--color-all-bg); font-weight: 700; border-bottom-color: var(--color-all-bg); }
+  .search-input-wrapper { margin-bottom: 16px; flex-shrink: 0; }
+  .search-input { width: 100%; padding: 12px 16px; font-size: 16px; border: 1px solid #ddd; border-radius: var(--radius-md); box-sizing: border-box; }
+  .spot-list { list-style: none; padding: 0; margin: 0; overflow-y: auto; max-height: 50vh; }
+  .spot-list-item { padding: 12px 8px; border-bottom: 1px solid #eee; cursor: pointer; transition: background-color 0.2s ease; }
+  .spot-list-item:hover { background-color: #f5f5f5; }
+  .spot-list-item:last-child { border-bottom: none; }
+  .spot-list-item .item-name { font-weight: 600; color: #333; }
+  .spot-list-item .item-course { font-size: 12px; color: #888; margin-top: 4px; }
+  .info-window-container {
+    background-color: var(--info-bg); color: var(--info-text); padding: 16px;
+    border-radius: var(--radius-md); box-shadow: var(--shadow-lg);
+    max-width: 280px; font-size: 14px;
+  }
+  .info-window-container strong { font-size: 18px; font-weight: bold; display: block; margin-bottom: 4px; }
+  .info-window-container .info-course { font-size: 12px; display: block; margin-bottom: 12px; opacity: 0.9; }
+  .info-window-container p { margin: 8px 0; font-size: 13px; line-height: 1.5; }
+  .info-window-container img { width: 100%; height: auto; border-radius: var(--radius-sm); margin-top: 5px; margin-bottom: 12px; background-color: rgba(0,0,0,0.1); }
+  .info-window-container .info-links { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+  .info-window-container .info-link {
+    display: block; padding: 8px 12px; border: 1px solid var(--info-link-border);
+    color: var(--info-link); text-decoration: none; border-radius: var(--radius-sm);
+    text-align: center; font-size: 14px; font-weight: 600; transition: background-color 0.2s ease;
+  }
+  .info-window-container .info-link:hover { background-color: var(--info-link-hover-bg); }
+  @media (max-width: 768px) {
+    .hamburger-btn { top: 15px; left: 15px; }
+    .fab-button.bottom-right { bottom: 20px; right: 15px; }
+    .fab-button.bottom-left { bottom: 20px; left: 15px; }
+    .fab-button.reset-view-btn {
+      bottom: 90px;
+    }
+    .info-window-container { max-width: 250px; }
+  }
+  
+  #resetViewBtn {
+    background-image: url('image/引き画面にするボタン.png');
+  }
+  #currentLocationBtn {
+    background-image: url('image/現在地に移動するボタン.png');
+  }
+  #homeBtn {
+    background-image: url('image/戻るボタン.png');
+  }

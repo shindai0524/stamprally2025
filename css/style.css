@@ -1,40 +1,255 @@
-/* css/style.css */
-
-body { 
-    font: 14px sans-serif; 
+/* style.css */
+body, html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    font-family: sans-serif;
 }
 
-.wrapper { 
-    width: 400px; 
-    padding: 20px; 
-    margin: 100px auto; 
+.background {
+    background-image: url('../image/background.png');
+    background-size: cover;
+    background-position: center;
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    padding-top: 5vh;
 }
 
-.wrapper h2 {
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 90%;
+    max-width: 400px;
+    padding: 20px 0;
+}
+
+.logo {
+    width: 80%;
+    max-width: 250px;
     margin-bottom: 30px;
 }
 
-.form-group {
-    margin-bottom: 1.5rem;  /* 少し調整しました */
+.title {
+    width: 20%;
+    max-width: 300px;
+    height: auto;
+    margin-bottom: 20px;
 }
 
-.submit-btn-area {
+img[alt="ログイン"].title{
+    margin-top: 25px;
+}
+
+.form-title {
+    color: #555;
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+#login-form{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 300px; /* フォームの最小高さを統一 */
+    margin-top: 15px;
+}
+
+#register-form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 300px; /* フォームの最小高さを統一 */
+}
+
+.form-group {
+    margin-bottom: 30px;
+    width: 100%;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* パスワード入力欄のラッパー - 他の入力欄より少し大きく */
+.password-input-wrapper {
+    position: relative;
+    width: 320px; /* 通常より20px大きく */
+    max-width: 95%;
+    display: block;
+    margin: 10px auto 0; /* 上マージンを10px追加してパスワード入力欄を下げる */
+}
+
+/* --- 各入力欄の背景画像を指定 --- */
+#email-input {
+    background-image: url('../image/email_form.png');
+}
+
+#password-input {
+    background-image: url('../image/password_form.png');
+}
+
+#confirm-password-input {
+    background-image: url('../image/confirm_password_form.png');
+}
+
+/* --- 入力欄の共通スタイル --- */
+.form-control {
+    width: 300px !important;
+    max-width: 90%;
+    height: 50px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 30px;
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    background-color: transparent;
+    box-sizing: border-box;
+    font-size: 1rem;
+    color: #333;
+    display: block;
+    margin: 0 auto;
+}
+
+/* マスキング機能付きパスワード入力欄専用のスタイル */
+.password-input-wrapper .form-control {
+    width: 320px !important; /* 通常の入力欄より少し幅を広げる */
+    max-width: 95%;
+    margin: 0 auto;
+    padding: 10px 50px 10px 20px; /* 右側のパディングを50pxに増加 */
+    box-sizing: border-box;
+    margin-top: 20px;
+}
+
+.form-control::placeholder {
+    color: #888;
+}
+
+/* パスワード表示/非表示ボタンの位置調整 - 判定エリアを大きく */
+.password-toggle-btn {
+    position: absolute;
+    right: 15px; /* 右端から少し余裕を持たせる */
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid #ccc;
+    border-radius: 50%;
+    cursor: pointer;
+    padding: 10px; /* パディングを大きくして判定エリアを拡大 */
+    color: #666;
+    font-size: 16px; /* アイコンも少し大きく */
+    transition: all 0.3s ease;
+    z-index: 100;
+    width: 36px; /* ボタンサイズを大きく */
+    height: 36px; /* ボタンサイズを大きく */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    margin-top: 10px;
+}
+
+.password-toggle-btn:hover {
+    color: #333;
+    background: rgba(255, 255, 255, 1);
+    transform: translateY(-50%) scale(1.1);
+}
+
+.password-toggle-btn:focus {
+    outline: none;
+}
+
+/* ボタン位置統一のためのスタイル */
+.submit-button {
+    display: block;
+    width: 175px;
+    max-width: 80%;
+    cursor: pointer;
+    margin-bottom: 15px;
+    /* 絶対位置でボタンを統一位置に配置 */
+    position: relative;
+    top: auto;
+}
+
+/* ログインフォーム用のボタン位置調整 */
+#login-form .submit-button {
+    margin-top: 40px; /* ログインフォームでは上マージンを大きく */
+}
+
+/* 新規登録フォーム用のボタン位置調整 */
+#register-form .submit-button {
+    margin-top: 40px; /* 新規登録フォームでは通常のマージン */
+}
+
+.link-to-login {
+    margin-top: 25px;
+    text-decoration: none;
+    display: block;
     text-align: center;
 }
 
-/* ログインページのパスワード表示アイコン用 */
-.input-group-append .input-group-text {
-    cursor: pointer;
+.link-to-register {
+    margin-top: 25px;
+    text-decoration: none;
+    display: block;
+    text-align: center;
 }
 
-/* エラーメッセージ用 */
+/* --- エラー表示関連 --- */
 .invalid-feedback { 
     display: none; 
     width: 100%; 
-    margin-top: .25rem; 
-    font-size: 80%; 
-    color: #dc3545; 
+    margin-top: 5px; 
+    font-size: 0.7rem; 
+    color: #dc3545;
+    text-align: center;
 }
-.is-invalid ~ .invalid-feedback { 
+
+.is-invalid + .invalid-feedback { 
     display: block; 
+}
+
+.alert {
+    width: 100%;
+    max-width: 300px;
+    padding: 10px;
+    margin: 15px auto 0;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.form-control:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.link-to-login img {
+    margin-top: -10px;
+    width: 200px;
+    max-width: 80%;
+    height: auto;
+}
+
+.link-to-register img {
+    margin-top: -10px;
+    width: 160px;
+    max-width: 80%;
+    height: auto;
 }

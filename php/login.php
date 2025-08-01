@@ -1,14 +1,14 @@
 <?php
 // login.php
 
-require_once __DIR__ . '/../config.php';
-require_once __DIR__ . '/../vendor/autoload.php';
-require_once __DIR__ . '/../validation.php';
-require_once __DIR__ . '/../db.php'; 
+require_once __DIR__ . '/../../app_files/config.php';
+require_once __DIR__ . '/../../app_files/vendor/autoload.php';
+require_once __DIR__ . '/../../app_files/validation.php';
+require_once __DIR__ . '/../../app_files/db.php'; 
 
 use Firebase\JWT\JWT;
 
-// 1. 最初にDB接続を確立
+
 $conn = get_db_connection();
 
 // レートリミットのロジック
@@ -22,18 +22,17 @@ $result = $failure_check_stmt->get_result();
 $failures = $result->fetch_assoc();
 $failure_check_stmt->close();
 
-// 失敗回数が5回以上の場合、リクエストをブロック
 if ($failures['failure_count'] >= 5) {
     header("Content-Type: application/json");
-    http_response_code(429); // 429 Too Many Requests
+    http_response_code(429);
     echo json_encode(['error' => '試行回数が多すぎます。5分後に再度お試しください。']);
     $conn->close();
     exit;
 }
 
-
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     header("Content-Type: application/json");
+
 
     $errors = validation($_POST, false, $conn);
 
@@ -48,39 +47,38 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $password = $_POST['password'];
 
 
-    $stmt = $conn->prepare("SELECT id, username, password FROM users WHERE username = ?");
+    $stmt = $conn->prepare("SELECT id, email, password FROM users WHERE email = ?");
     $stmt->bind_param("s", $email);
     $stmt->execute();
     
     $stmt->store_result();
 
     if ($stmt->num_rows > 0) {
-        $stmt->bind_result($id, $username_db, $password_hash);
+        $stmt->bind_result($id, $email_db, $password_hash);
         $stmt->fetch();
 
         $user = [
             'id' => $id,
-            'username' => $username_db,
+            'email' => $email_db,
             'password' => $password_hash
         ];
 
         if (password_verify($password, $user['password'])) {
-            // ログイン成功時、失敗ログを削除
             $delete_stmt = $conn->prepare("DELETE FROM login_failures WHERE ip_address = ?");
             $delete_stmt->bind_param("s", $ip_address);
             $delete_stmt->execute();
             $delete_stmt->close();
 
-            // JWTペイロードの作成
             $iat = time();
-            $exp = $iat + (60 * 60); // 有効期限1時間
-            $iss = "http://localhost/token-login-example";
+            $exp = $iat + (60 * 60 * 24 * 60);
+            $iss = "https://stamp.onista-noboribetsu.com";
 
             $payload = [
                 'iss' => $iss, 'iat' => $iat, 'exp' => $exp,
                 'data' => [
                     'userId' => $user['id'],
-                    'username' => $user['username']
+
+                    'email' => $user['email']
                 ]
             ];
             
@@ -89,7 +87,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             http_response_code(200);
             echo json_encode(['message' => 'Login successful.', 'token' => $jwt]);
         } else {
-            // ログイン失敗時、ログを記録
             $insert_stmt = $conn->prepare("INSERT INTO login_failures (ip_address, attempt_time) VALUES (?, NOW())");
             $insert_stmt->bind_param("s", $ip_address);
             $insert_stmt->execute();
@@ -99,7 +96,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             echo json_encode(['error' => 'メールアドレスまたはパスワードが正しくありません。']);
         }
     } else {
-        // ユーザーが存在しない場合も、ログを記録
         $insert_stmt = $conn->prepare("INSERT INTO login_failures (ip_address, attempt_time) VALUES (?, NOW())");
         $insert_stmt->bind_param("s", $ip_address);
         $insert_stmt->execute();

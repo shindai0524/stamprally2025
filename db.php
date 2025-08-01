@@ -1,6 +1,7 @@
 <?php
 // db.php
 
+// db.phpはapp_filesの中にあるので、同じ階層のconfig.phpを読み込む
 require_once __DIR__.'/config.php';
 
 /**

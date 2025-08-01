@@ -1,0 +1,60 @@
+[24-Jul-2025 22:44:27 Asia/Tokyo] PHP Warning:  require_once(/virtual/htdocs/sr_html/test/php/../../validation.php): Failed to open stream: No such file or directory in /virtual/htdocs/sr_html/test/php/register.php on line 5
+[24-Jul-2025 22:44:27 Asia/Tokyo] PHP Fatal error:  Uncaught Error: Failed opening required '/virtual/htdocs/sr_html/test/php/../../validation.php' (include_path='.:/usr/share/pear:/usr/share/php') in /virtual/htdocs/sr_html/test/php/register.php:5
+Stack trace:
+#0 {main}
+  thrown in /virtual/htdocs/sr_html/test/php/register.php on line 5
+[24-Jul-2025 22:44:33 Asia/Tokyo] PHP Warning:  require_once(/virtual/htdocs/sr_html/test/php/../../validation.php): Failed to open stream: No such file or directory in /virtual/htdocs/sr_html/test/php/register.php on line 5
+[24-Jul-2025 22:44:33 Asia/Tokyo] PHP Fatal error:  Uncaught Error: Failed opening required '/virtual/htdocs/sr_html/test/php/../../validation.php' (include_path='.:/usr/share/pear:/usr/share/php') in /virtual/htdocs/sr_html/test/php/register.php:5
+Stack trace:
+#0 {main}
+  thrown in /virtual/htdocs/sr_html/test/php/register.php on line 5
+[24-Jul-2025 22:44:47 Asia/Tokyo] PHP Warning:  require_once(/virtual/htdocs/sr_html/test/php/../../validation.php): Failed to open stream: No such file or directory in /virtual/htdocs/sr_html/test/php/register.php on line 5
+[24-Jul-2025 22:44:47 Asia/Tokyo] PHP Fatal error:  Uncaught Error: Failed opening required '/virtual/htdocs/sr_html/test/php/../../validation.php' (include_path='.:/usr/share/pear:/usr/share/php') in /virtual/htdocs/sr_html/test/php/register.php:5
+Stack trace:
+#0 {main}
+  thrown in /virtual/htdocs/sr_html/test/php/register.php on line 5
+[24-Jul-2025 22:44:50 Asia/Tokyo] PHP Fatal error:  Uncaught mysqli_sql_exception: Connection refused in /virtual/htdocs/sr_html/app_files/db.php:13
+Stack trace:
+#0 /virtual/htdocs/sr_html/app_files/db.php(13): mysqli->__construct()
+#1 /virtual/htdocs/sr_html/test/php/login.php(12): get_db_connection()
+#2 {main}
+  thrown in /virtual/htdocs/sr_html/app_files/db.php on line 13
+[24-Jul-2025 22:45:56 Asia/Tokyo] PHP Warning:  require_once(/virtual/htdocs/sr_html/test/php/../../validation.php): Failed to open stream: No such file or directory in /virtual/htdocs/sr_html/test/php/register.php on line 5
+[24-Jul-2025 22:45:56 Asia/Tokyo] PHP Fatal error:  Uncaught Error: Failed opening required '/virtual/htdocs/sr_html/test/php/../../validation.php' (include_path='.:/usr/share/pear:/usr/share/php') in /virtual/htdocs/sr_html/test/php/register.php:5
+Stack trace:
+#0 {main}
+  thrown in /virtual/htdocs/sr_html/test/php/register.php on line 5
+[24-Jul-2025 22:49:00 Asia/Tokyo] PHP Warning:  require_once(/virtual/htdocs/sr_html/test/php/../../validation.php): Failed to open stream: No such file or directory in /virtual/htdocs/sr_html/test/php/register.php on line 5
+[24-Jul-2025 22:49:00 Asia/Tokyo] PHP Fatal error:  Uncaught Error: Failed opening required '/virtual/htdocs/sr_html/test/php/../../validation.php' (include_path='.:/usr/share/pear:/usr/share/php') in /virtual/htdocs/sr_html/test/php/register.php:5
+Stack trace:
+#0 {main}
+  thrown in /virtual/htdocs/sr_html/test/php/register.php on line 5
+[24-Jul-2025 22:49:01 Asia/Tokyo] PHP Warning:  require_once(/virtual/htdocs/sr_html/test/php/../../validation.php): Failed to open stream: No such file or directory in /virtual/htdocs/sr_html/test/php/register.php on line 5
+[24-Jul-2025 22:49:01 Asia/Tokyo] PHP Fatal error:  Uncaught Error: Failed opening required '/virtual/htdocs/sr_html/test/php/../../validation.php' (include_path='.:/usr/share/pear:/usr/share/php') in /virtual/htdocs/sr_html/test/php/register.php:5
+Stack trace:
+#0 {main}
+  thrown in /virtual/htdocs/sr_html/test/php/register.php on line 5
+[24-Jul-2025 22:54:46 Asia/Tokyo] PHP Fatal error:  Uncaught mysqli_sql_exception: Connection refused in /virtual/htdocs/sr_html/app_files/db.php:13
+Stack trace:
+#0 /virtual/htdocs/sr_html/app_files/db.php(13): mysqli->__construct()
+#1 /virtual/htdocs/sr_html/test/php/register.php(12): get_db_connection()
+#2 {main}
+  thrown in /virtual/htdocs/sr_html/app_files/db.php on line 13
+[24-Jul-2025 22:54:51 Asia/Tokyo] PHP Fatal error:  Uncaught mysqli_sql_exception: Connection refused in /virtual/htdocs/sr_html/app_files/db.php:13
+Stack trace:
+#0 /virtual/htdocs/sr_html/app_files/db.php(13): mysqli->__construct()
+#1 /virtual/htdocs/sr_html/test/php/register.php(12): get_db_connection()
+#2 {main}
+  thrown in /virtual/htdocs/sr_html/app_files/db.php on line 13
+[24-Jul-2025 22:54:53 Asia/Tokyo] PHP Fatal error:  Uncaught mysqli_sql_exception: Connection refused in /virtual/htdocs/sr_html/app_files/db.php:13
+Stack trace:
+#0 /virtual/htdocs/sr_html/app_files/db.php(13): mysqli->__construct()
+#1 /virtual/htdocs/sr_html/test/php/login.php(12): get_db_connection()
+#2 {main}
+  thrown in /virtual/htdocs/sr_html/app_files/db.php on line 13
+[24-Jul-2025 23:20:09 Asia/Tokyo] PHP Fatal error:  Uncaught mysqli_sql_exception: Connection refused in /virtual/htdocs/sr_html/app_files/db.php:13
+Stack trace:
+#0 /virtual/htdocs/sr_html/app_files/db.php(13): mysqli->__construct()
+#1 /virtual/htdocs/sr_html/test/php/register.php(12): get_db_connection()
+#2 {main}
+  thrown in /virtual/htdocs/sr_html/app_files/db.php on line 13

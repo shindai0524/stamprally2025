@@ -3,14 +3,67 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>スタート</title>
     <link rel="icon" href="https://glitch.com/favicon.ico" />
     <link rel="stylesheet" href="index_style.css" />
-    <script
-      src="https://code.jquery.com/jquery-3.7.0.min.js"
-      integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g="
-      crossorigin="anonymous"
-    ></script>
-  </head>
+    
+    <style>
+      /* 認証が完了するまでページ本体を非表示にし、ちらつきを防ぐ */
+      body {
+        visibility: hidden;
+      }
+    </style>
+    <script>
+      /**
+       * JWTのペイロード部分をデコードする関数
+       */
+      function parseJwt(token) {
+        try {
+          const base64Url = token.split(".")[1];
+          const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+          const jsonPayload = decodeURIComponent(
+            atob(base64)
+              .split("")
+              .map(function (c) {
+                return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+              })
+              .join("")
+          );
+          return JSON.parse(jsonPayload);
+        } catch (e) {
+          return null;
+        }
+      }
+
+      /**
+       * ページの読み込み時にユーザーの認証状態をチェックする関数
+       */
+      function checkAuthentication() {
+        const token = localStorage.getItem("jwt_token");
+
+        // 1. トークンが存在しない場合はログインページへリダイレクト
+        if (!token) {
+          window.location.href = "login.html";
+          return;
+        }
+
+        const payload = parseJwt(token);
+
+        // 2. トークンが不正、または有効期限切れの場合もログインページへリダイレクト
+        if (!payload || payload.exp * 1000 < Date.now()) {
+          localStorage.removeItem("jwt_token"); // 古いトークンを削除
+          window.location.href = "login.html";
+          return;
+        }
+
+        // 3. 認証が成功した場合、ページ本体を表示する
+        document.body.style.visibility = 'visible';
+      }
+
+      // ページの読み込みが始まったら、すぐに認証チェックを実行
+      checkAuthentication();
+    </script>
+    </head>
   <body>
     <div class="container">
       <div class="title">
@@ -33,28 +86,6 @@
     </div>
 
     <script>
-      /**
-       * JWTのペイロードをデコードするヘルパー関数
-       */
-      function parseJwt(token) {
-        try {
-          const base64Url = token.split(".")[1];
-          const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-          const jsonPayload = decodeURIComponent(
-            atob(base64)
-              .split("")
-              .map(function (c) {
-                return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
-              })
-              .join("")
-          );
-          return JSON.parse(jsonPayload);
-        } catch (e) {
-          return null;
-        }
-      }
-
-      // スタートボタンの要素を取得
       const startButton = document.getElementById("start-button");
 
       // ボタンにクリックイベントリスナーを追加

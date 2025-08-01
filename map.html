@@ -3,287 +3,52 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>登別マップ</title>
-  <style>
-    :root {
-      --font-family-base: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "メイリオ", Meiryo, sans-serif;
-      --radius-sm: 8px;
-      --radius-md: 12px;
-      --radius-lg: 16px;
-      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
-      --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.15);
-      --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.2);
-      --color-all-bg: #4285F4;
-      --color-all-active: #3367D6;
-      --color-enma-bg: #AE00FF;
-      --color-enma-active: #8A00CC;
-      --color-brand-bg: #1E88E5;
-      --color-brand-active: #1565C0;
-      --color-ainu-bg: #43A047;
-      --color-ainu-active: #2E7D32;
-      --info-bg: #757575;
-      --info-text: #ffffff;
-      --info-link: #ffffff;
-      --info-link-border: rgba(255, 255, 255, 0.7);
-      --info-link-hover-bg: rgba(255, 255, 255, 0.15);
-    }
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: var(--font-family-base);
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-      overflow: hidden;
-    }
-    #map {
-      height: 100vh;
-      width: 100%;
-    }
-    .hamburger-btn {
-      position: fixed;
-      top: 20px;
-      left: 20px;
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(0,0,0,0.05);
-      border-radius: 50%;
-      width: 50px;
-      height: 50px;
-      box-shadow: var(--shadow-md);
-      z-index: 1001;
-      font-size: 24px;
-      color: #333;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .hamburger-btn:hover {
-      transform: translateY(-2px) scale(1.05);
-      box-shadow: var(--shadow-lg);
-    }
-    .hamburger-btn.is-active {
-      transform: rotate(180deg);
-    }
-    .fab-button {
-      position: fixed;
-      z-index: 998;
-      width: 56px;
-      height: 56px;
-      background-color: #fff;
-      border-radius: 50%;
-      box-shadow: var(--shadow-md);
-      border: none;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.2s ease-in-out;
-    }
-    .fab-button:hover {
-      transform: scale(1.05);
-      box-shadow: var(--shadow-lg);
-    }
-    .fab-button svg {
-      fill: #555;
-    }
-    .fab-button.bottom-right {
-      bottom: 25px;
-      right: 20px;
-    }
-    .fab-button.bottom-left {
-      bottom: 25px;
-      left: 20px;
-    }
-    /* ★★★ 初期表示に戻すボタンの位置調整 ★★★ */
-    .fab-button.reset-view-btn {
-      bottom: 95px; /* 現在地ボタンの上 (25px + 56px + 14px) */
-    }
-    .menu-overlay {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0, 0, 0, 0.4); z-index: 1000;
-      opacity: 0; visibility: hidden;
-      transition: opacity 0.3s ease, visibility 0.3s;
-    }
-    .menu-overlay.show {
-      opacity: 1; visibility: visible;
-    }
-    .side-menu {
-      position: fixed; top: 0; left: 0;
-      width: 280px; height: 100%; background: #fdfdfd;
-      box-shadow: var(--shadow-lg); transform: translateX(-100%);
-      transition: transform 0.3s ease-in-out;
-      z-index: 1002; display: flex; flex-direction: column;
-    }
-    .side-menu.open {
-      transform: translateX(0);
-    }
-    .side-menu-header {
-      padding: 20px; border-bottom: 1px solid #eee;
-      display: flex; justify-content: space-between; align-items: center;
-    }
-    .side-menu-header h3 {
-      margin: 0; font-size: 20px;
-    }
-    .side-menu-nav {
-      list-style: none; padding: 10px 0; margin: 0;
-    }
-    .side-menu-nav li button {
-      display: flex; align-items: center; gap: 16px;
-      width: 100%; padding: 16px 20px; background: none; border: none;
-      text-align: left; font-size: 16px; font-family: var(--font-family-base);
-      font-weight: 500; cursor: pointer; transition: background-color 0.2s;
-    }
-    .side-menu-nav li button:hover {
-      background-color: #f0f0f0;
-    }
-    .modal-overlay {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(4px);
-      z-index: 1999; opacity: 0; visibility: hidden;
-      transition: opacity 0.3s ease, visibility 0.3s;
-    }
-    .modal-overlay.show {
-      opacity: 1; visibility: visible;
-    }
-    .modal-panel {
-      position: fixed; top: 50%; left: 50%;
-      transform: translate(-50%, -50%) scale(0.95);
-      background: #ffffff; border-radius: var(--radius-lg);
-      padding: 24px; box-shadow: var(--shadow-lg);
-      z-index: 2000; width: 90%; max-width: 380px;
-      opacity: 0; visibility: hidden;
-      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      display: flex; flex-direction: column;
-    }
-    .modal-panel.show {
-      opacity: 1; visibility: visible; transform: translate(-50%, -50%) scale(1);
-    }
-    .close-btn {
-      position: absolute; top: 12px; right: 12px;
-      background: #f0f0f0; border: none; border-radius: 50%;
-      width: 32px; height: 32px; font-size: 20px; color: #888; cursor: pointer;
-      transition: all 0.2s ease; display: flex; align-items: center; justify-content: center;
-    }
-    .close-btn:hover {
-      background: #e0e0e0; color: #333; transform: rotate(90deg);
-    }
-    .modal-title {
-      font-size: 20px; font-weight: bold; margin-bottom: 20px;
-      color: #333; text-align: center; flex-shrink: 0;
-    }
-    .filter-buttons {
-      display: flex; flex-direction: column; gap: 10px;
-    }
-    .filter-button {
-      border: 2px solid transparent; border-radius: var(--radius-md); padding: 12px 16px;
-      font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s ease;
-      display: flex; align-items: center; gap: 12px; text-align: left; color: white;
-    }
-    .filter-button:hover {
-      transform: translateY(-1px); box-shadow: var(--shadow-sm);
-    }
-    .filter-button.active {
-      transform: scale(1.03); box-shadow: var(--shadow-md); border-color: rgba(255,255,255,0.6);
-    }
-    .filter-icon {
-      font-size: 20px;
-    }
-    .filter-button.all-courses { background: var(--color-all-bg); }
-    .filter-button.enma-course { background: var(--color-enma-bg); }
-    .filter-button.brand-course { background: var(--color-brand-bg); }
-    .filter-button.ainu-course { background: var(--color-ainu-bg); }
-    .filter-button.all-courses.active { background: var(--color-all-active); }
-    .filter-button.enma-course.active { background: var(--color-enma-active); }
-    .filter-button.brand-course.active { background: var(--color-brand-active); }
-    .filter-button.ainu-course.active { background: var(--color-ainu-active); }
-    .tutorial-content { display: flex; flex-direction: column; gap: 16px; }
-    .tutorial-item { display: flex; align-items: flex-start; gap: 16px; }
-    .tutorial-icon { font-size: 28px; width: 40px; text-align: center; flex-shrink: 0; margin-top: -4px; }
-    .tutorial-text h4 { margin: 0 0 4px 0; font-size: 16px; color: #333; }
-    .tutorial-text p { margin: 0; font-size: 14px; color: #666; line-height: 1.5; }
-    .list-tabs {
-      display: flex; gap: 4px; margin: -10px -10px 16px -10px;
-      padding: 0 10px; border-bottom: 1px solid #eee; flex-shrink: 0; flex-wrap: wrap;
-    }
-    .list-tab {
-      padding: 10px; border: none; background-color: transparent;
-      font-size: 13px; font-weight: 500; cursor: pointer; color: #666;
-      border-bottom: 3px solid transparent; transition: all 0.2s ease;
-    }
-    .list-tab:hover { color: #000; background-color: #f5f5f5; }
-    .list-tab.active { color: var(--color-all-bg); font-weight: 700; border-bottom-color: var(--color-all-bg); }
-    .search-input-wrapper { margin-bottom: 16px; flex-shrink: 0; }
-    .search-input { width: 100%; padding: 12px 16px; font-size: 16px; border: 1px solid #ddd; border-radius: var(--radius-md); box-sizing: border-box; }
-    .spot-list { list-style: none; padding: 0; margin: 0; overflow-y: auto; max-height: 50vh; }
-    .spot-list-item { padding: 12px 8px; border-bottom: 1px solid #eee; cursor: pointer; transition: background-color 0.2s ease; }
-    .spot-list-item:hover { background-color: #f5f5f5; }
-    .spot-list-item:last-child { border-bottom: none; }
-    .spot-list-item .item-name { font-weight: 600; color: #333; }
-    .spot-list-item .item-course { font-size: 12px; color: #888; margin-top: 4px; }
-    .info-window-container {
-      background-color: var(--info-bg); color: var(--info-text); padding: 16px;
-      border-radius: var(--radius-md); box-shadow: var(--shadow-lg);
-      max-width: 250px; font-size: 14px;
-    }
-    .info-window-container strong { font-size: 18px; font-weight: bold; display: block; margin-bottom: 4px; }
-    .info-window-container .info-course { font-size: 12px; display: block; margin-bottom: 12px; opacity: 0.9; }
-    .info-window-container img { width: 100%; height: auto; border-radius: var(--radius-sm); margin-top: 5px; margin-bottom: 12px; background-color: rgba(0,0,0,0.1); }
-    .info-window-container .info-links { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
-    .info-window-container .info-link {
-      display: block; padding: 8px 12px; border: 1px solid var(--info-link-border);
-      color: var(--info-link); text-decoration: none; border-radius: var(--radius-sm);
-      text-align: center; font-size: 14px; font-weight: 600; transition: background-color 0.2s ease;
-    }
-    .info-window-container .info-link:hover { background-color: var(--info-link-hover-bg); }
-    @media (max-width: 768px) {
-      .hamburger-btn { top: 15px; left: 15px; }
-      .fab-button.bottom-right { bottom: 20px; right: 15px; }
-      .fab-button.bottom-left { bottom: 20px; left: 15px; }
-      /* ★★★ スマホ表示での「初期表示に戻す」ボタンの位置調整 ★★★ */
-      .fab-button.reset-view-btn {
-        bottom: 90px; /* 20px + 56px + 14px */
-      }
-    }
-  </style>
-</head>
+  <title>マップ</title>
+  <link rel="stylesheet" href="map.css"> </head>
 <body>
+  <div class="floating-logo">
+    <img src="image/logo.png" alt="アイヌ×奥まちデジタルスタンプラリー ロゴ">
+  </div>
+
   <div id="map"></div>
-  <button class="hamburger-btn" id="hamburgerBtn">☰</button>
+
+  <button class="hamburger-btn" id="hamburgerBtn" aria-label="メニューを開く"></button>
+
   <div class="menu-overlay" id="menuOverlay"></div>
   <div class="side-menu" id="sideMenu">
     <div class="side-menu-header">
-      <h3>メニュー</h3>
-      <button class="close-btn" id="closeMenuBtn">×</button>
+      <h3></h3>
+      <button class="close-btn" id="closeMenuBtn">　</button>
     </div>
     <ul class="side-menu-nav">
-      <li><button id="menuOpenSearchBtn">🔍 スポットを探す</button></li>
-      <li><button id="menuOpenFilterBtn">📍 コース選択</button></li>
-      <li><button id="menuTutorialBtn">❓ 使い方</button></li>
+      <li><button id="menuOpenSearchBtn" aria-label="スポットを探す"></button></li>
+      <li><button id="menuOpenFilterBtn" aria-label="コースを選択"></button></li>
+      <li><button id="menuTutorialBtn" aria-label="マップの操作方法"></button></li>
     </ul>
   </div>
+
   <div class="modal-overlay" id="modalOverlay"></div>
-  <div class="modal-panel" id="filterModal">
-    <button class="close-btn">×</button>
-    <div class="modal-title">コースを選択</div>
-    <div class="filter-buttons">
-      <button class="filter-button all-courses active" data-course="all"><span class="filter-icon">🗺️</span><span>すべて表示</span></button>
-      <button class="filter-button enma-course" data-course="登別閻魔やきそばコース"><span class="filter-icon">🍜</span><span>閻魔やきそば</span></button>
-      <button class="filter-button brand-course" data-course="登別ブランド推奨品コース"><span class="filter-icon">🏪</span><span>ブランド推奨品</span></button>
-      <button class="filter-button ainu-course" data-course="アイヌ文化施設・史跡コース"><span class="filter-icon">🏛️</span><span>アイヌ文化・史跡</span></button>
-    </div>
+
+<div class="modal-panel" id="filterModal">
+  
+  <button class="close-btn"></button>
+  
+  <img src="image/cource" alt="コースを選択" class="modal-title-image">
+      
+  <div class="filter-buttons">
+    <button class="filter-button all-courses active" data-course="all" aria-label="すべて表示"></button>
+    <button class="filter-button enma-course" data-course="登別閻魔やきそばコース" aria-label="登別閻魔やきそばコース"></button>
+    <button class="filter-button brand-course" data-course="登別ブランド推奨品コース" aria-label="登別ブランド推奨品コース"></button>
+    <button class="filter-button ainu-course" data-course="アイヌ文化施設・史跡コース" aria-label="アイヌ文化・史跡コース"></button>
   </div>
+
+</div>
+
   <div class="modal-panel" id="tutorialModal">
-    <button class="close-btn">×</button>
-    <div class="modal-title">マップの操作方法</div>
-    <div class="tutorial-content">
-      <div class="tutorial-item"><div class="tutorial-icon">↕️</div><div class="tutorial-text"><h4>拡大・縮小</h4><p>ピンチ操作、またはマウスホイールで地図を拡大・縮小できます。</p></div></div>
-      <div class="tutorial-item"><div class="tutorial-icon">🖐️</div><div class="tutorial-text"><h4>地図の移動</h4><p>ドラッグ（スワイプ）して、地図を自由に動かせます。</p></div></div>
-      <div class="tutorial-item"><div class="tutorial-icon" style="font-size:34px;">♨️</div><div class="tutorial-text"><h4>スポット詳細</h4><p>スタンプ型のアイコンをタップすると、お店や史跡の詳細情報が見られます。</p></div></div>
-      <div class="tutorial-item"><div class="tutorial-icon">🔴</div><div class="tutorial-text"><h4>グループ表示</h4><p>赤い丸は、複数のスポットがまとまっている印です。地図を拡大すると個別のアイコンに分かれます。</p></div></div>
-    </div>
+    <button class="close-btn"></button>
+      <img src="image/map_operation.png" alt="マップの操作方法">
   </div>
+
   <div class="modal-panel" id="searchListModal">
     <button class="close-btn">×</button>
     <div class="modal-title">スポットを探す</div>
@@ -299,82 +64,91 @@
     <ul class="spot-list" id="spotList"></ul>
   </div>
 
-  <button class="fab-button bottom-right reset-view-btn" id="resetViewBtn" aria-label="初期表示に戻す">
-    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#555555"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M14 12c0-1.1-.9-2-2-2s-2 .9-2 2 .9 2 2 2 2-.9 2-2zm-2-9c-4.97 0-9 4.03-9 9H0l4 4 4-4H5c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.51 0-2.91-.46-4.12-1.24l-1.43 1.43C8.63 20.33 10.22 21 12 21c4.97 0 9-4.03 9-9s-4.03-9-9-9z"/></svg>
-  </button>
+  <button class="fab-button bottom-right reset-view-btn" id="resetViewBtn" aria-label="初期表示に戻す"></button>
+  <button class="fab-button bottom-right" id="currentLocationBtn" aria-label="現在地に戻る"></button>
+  <button class="fab-button bottom-left" id="homeBtn" aria-label="ホームに戻る"></button>
 
-  <button class="fab-button bottom-right" id="currentLocationBtn" aria-label="現在地に戻る">
-    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3c-.46-4.17-3.77-7.48-7.94-7.94V1h-2v2.06C6.83 3.52 3.52 6.83 3.06 11H1v2h2.06c.46 4.17 3.77 7.48 7.94 7.94V23h2v-2.06c4.17-.46 7.48-3.77 7.94-7.94H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/></svg>
-  </button>
-  <button class="fab-button bottom-left" id="homeBtn" aria-label="ホームに戻る">
-    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
-  </button>
-  
   <script>
     let map, markerCluster, currentLocationMarker = null, openInfoWindow = null, allMarkers = [], activeFilter = 'all';
 
-    // --- Data Store ---
     const locations = [
-      {lat: 42.494236076469, lng: 141.14388744287, spot: "温泉市場（登別閻魔やきそば）", url: "http://www.onsenichiba.com/", course: "登別閻魔やきそばコース", imageUrl: "https://www.noboribetsubrand.jp/wp-content/uploads/2021/02/enma01.jpg"},
-      {lat: 42.4916613838119, lng: 141.142098547207, spot: "食事処　松前", url: "https://www.nobogura.co.jp/dining/restaurant/", course: "登別閻魔やきそばコース", imageUrl: null},
-      {lat: 42.4943148371567, lng: 141.143680649998, spot: "喫茶　田園", url: "https://noboribetsu-spa.jp/spot/spot0203/", course: "登別閻魔やきそばコース", imageUrl: null},
-      {lat: 42.4915529300037, lng: 141.14433525912, spot: "郷の味　しらかば", url: null, course: "登別閻魔やきそばコース", imageUrl: null},
-      {lat: 42.4937142208662, lng: 141.143137725688, spot: "いせくら", url: "https://www.sanpei.club/page/isekura/index.html", course: "登別閻魔やきそばコース", imageUrl: null},
-      {lat: 42.4555700074842, lng: 141.177458452443, spot: "きっさ点", url: null, course: "登別閻魔やきそばコース", imageUrl: null},
-      {lat: 42.4539420610664, lng: 141.178254537727, spot: "やきとりの一平　登別店", url: "https://www.e-ippei.com/group/", course: "登別閻魔やきそばコース", imageUrl: null},
-      {lat: 42.4863725778833, lng: 141.10834812546, spot: "登別カントリー倶楽部レストラン", url: "http://www.noboribetsu-cc.com/clubhouse/restaurant/", course: "登別閻魔やきそばコース", imageUrl: null},
-      {lat: 42.4526813879383, lng: 141.18108263489, spot: "ピアチェーレ・ノーチェ", url: "http://www.sanai-hospital.or.jp/topics/detail.php?id=1162", course: "登別閻魔やきそばコース", imageUrl: null},
-      {lat: 42.4649013168959, lng: 141.178466596623, spot: "わかさいも本舗登別東店レストラン桜", url: "https://www.wakasaimo.com/sakura/", course: "登別閻魔やきそばコース", imageUrl: null},
-      {lat: 42.455084675910726, lng: 141.18276904067434, spot: "レストランリーベ", url: "https://www.nixe.co.jp/restaurant-shop/", course: "登別閻魔やきそばコース", imageUrl: null},
-      {lat: 42.4525980360193, lng: 141.179705223505, spot: "食事＆喫茶 eファミリー", url: null, course: "登別閻魔やきそばコース", imageUrl: null},
-      {lat: 42.4098728313299, lng: 141.105935135582, spot: "福来軒", url: null, course: "登別閻魔やきそばコース", imageUrl: null},
-      {lat: 42.4098079507374, lng: 141.105027766722, spot: "ほろべつ屋台村　箸遊　佳乃", url: null, course: "登別閻魔やきそばコース", imageUrl: null},
-      {lat: 42.421999925894, lng: 141.116437287897, spot: "ソーダ食堂", url: null, course: "登別閻魔やきそばコース", imageUrl: null},
-      {lat: 42.410723608708, lng: 141.107017411201, spot: "焼肉居酒屋 ぐうちょきぱ", url: null, course: "登別閻魔やきそばコース", imageUrl: null},
-      {lat: 42.4113284689576, lng: 141.104806704455, spot: "ぱぴあ", url: null, course: "登別閻魔やきそばコース", imageUrl: null},
-      {lat: 42.4101148157229, lng: 141.106214620393, spot: "旬の台所くる美", url: "https://shun-kurumi.com/", course: "登別閻魔やきそばコース", imageUrl: null},
-      {lat: 42.4121797231925, lng: 141.106769062128, spot: "つぼ八 幌別店", url: "https://www.tsubohachi.co.jp/shop/other/horobetsu/", course: "登別閻魔やきそばコース", imageUrl: null},
-      {lat: 42.4122093473794, lng: 141.103855564575, spot: "旬の華 和か菜", url: "https://shunnohana-wakana.com/", course: "登別閻魔やきそばコース", imageUrl: null},
-      {lat: 42.3692010275891, lng: 141.054798666985, spot: "室蘭やきとり一平若草店", url: "https://muroran-yakitori.com/wakakusa.html", course: "登別閻魔やきそばコース", imageUrl: null},
-      {lat: 42.3743270710275, lng: 141.061311157797, spot: "カフェ アンジュリエ", url: "https://cafeangeller.amebaownd.com/", course: "登別閻魔やきそばコース", imageUrl: null},
-      {lat: 42.49419899432107, lng: 141.14386330410187, spot: "温泉市場（登別ブランド）", url: "http://www.onsenichiba.com/", course: "登別ブランド推奨品コース", imageUrl: null},
-      {lat: 42.4917029918133, lng: 141.14211197724, spot: "祝いの宿　登別グランドホテル", url: "https://www.nobogura.co.jp/", course: "登別ブランド推奨品コース", imageUrl: null},
-      {lat: 42.4921533982493, lng: 141.143095813196, spot: "大黒屋民芸店", url: "https://daikokuya-m.com/", course: "登別ブランド推奨品コース", imageUrl: null},
-      {lat: 42.4928262042903, lng: 141.142972700538, spot: "Pizzeria ASTRA", url: "https://noboribetsu-spa.jp/spot/spot0212/", course: "登別ブランド推奨品コース", imageUrl: null},
-      {lat: 42.4940231, lng: 141.1436458, spot: "藤崎わさび園", url: "https://marufuji-wasabi.jp/", course: "登別ブランド推奨品コース", imageUrl: null},
-      {lat: 42.4590154522764, lng: 141.117797846876, spot: "のぼりべつ酪農館", url: "https://www.rakunoukan.com/", course: "登別ブランド推奨品コース", imageUrl: null},
-      {lat: 42.4423598344062, lng: 141.157210863125, spot: "マルフク武澤水産", url: null, course: "登別ブランド推奨品コース", imageUrl: null},
-      {lat: 42.4502155219196, lng: 141.176329698661, spot: "肉のあさひ", url: null, course: "登別ブランド推奨品コース", imageUrl: null},
-      {lat: 42.4650120464239, lng: 141.178445118043, spot: "わかさいも本舗登別東店", url: "https://www.wakasaimo.com/shop/noboribetsuhigashi/", course: "登別ブランド推奨品コース", imageUrl: null},
-      {lat: 42.4526851543173, lng: 141.1811978763, spot: "登別観光交流センター「ヌプル」（登別ブランド）", url: "https://nupur.jp/shop", course: "登別ブランド推奨品コース", imageUrl: null},
-      {lat: 42.4112147728944, lng: 141.104402410178, spot: "かめやアーニス店", url: null, course: "登別ブランド推奨品コース", imageUrl: null},
-      {lat: 42.4111989301926, lng: 141.104477512024, spot: "のぼりべつブランドショップ", url: null, course: "登別ブランド推奨品コース", imageUrl: null},
-      {lat: 42.4104320929562, lng: 141.110136055436, spot: "道南平塚食品", url: "https://nattou.co.jp/hiratsuka/", course: "登別ブランド推奨品コース", imageUrl: null},
-      {lat: 42.3911083327445, lng: 141.077875460398, spot: "わかさいも本舗登別本店", url: "https://www.wakasaimo.com/shop/noboribetsuhonten/", course: "登別ブランド推奨品コース", imageUrl: null},
-      {lat: 42.3569882225151, lng: 141.050166229365, spot: "かめや本店", url: null, course: "登別ブランド推奨品コース", imageUrl: null},
-      {lat: 42.3748237100555, lng: 141.066207315879, spot: "冷鮮工房うす田", url: "https://www.reisenkoubou-usuda.com/", course: "登別ブランド推奨品コース", imageUrl: null},
-      {lat: 42.4906161688549, lng: 141.159028132679, spot: "ユーカラの里（のぼりべつクマ牧場内）", url: "https://bearpark.jp/yukar/", course: "アイヌ文化施設・史跡コース", imageUrl: null},
-      {lat: 42.452548572691065,lng: 141.18123586014346, spot: "登別観光交流センター「ヌプル」（アイヌ文化）", url: "https://nupur.jp/", course: "アイヌ文化施設・史跡コース", imageUrl: null},
-      {lat: 42.4513315909502, lng: 141.167191399963, spot: "知里幸恵 銀のしずく記念館", url: "https://www.ginnoshizuku.com/", course: "アイヌ文化施設・史跡コース", imageUrl: null},
-      {lat: 42.4205468059822, lng: 141.081934228961, spot: "登別市郷土資料館", url: "https://www.city.noboribetsu.lg.jp/docs/shiryokan/", course: "アイヌ文化施設・史跡コース", imageUrl: null},
-      {lat: 42.4471394654528, lng: 141.157277281413, spot: "知里幸恵の墓・金成マツの碑", url: null, course: "アイヌ文化施設・史跡コース", imageUrl: null},
-      {lat: 42.4494174865133, lng: 141.16995340134, spot: "知里真志保の碑", url: null, course: "アイヌ文化施設・史跡コース", imageUrl: null},
-      {lat: 42.4715023441873, lng: 141.156145985958, spot: "カムイワッカ", url: null, course: "アイヌ文化施設・史跡コース", imageUrl: null},
-      {lat: 42.4494596016715, lng: 141.169728635397, spot: "ヌプルペッ（登別川）", url: null, course: "アイヌ文化施設・史跡コース", imageUrl: null},
-      {lat: 42.4449682422638, lng: 141.16140251897, spot: "アフンルパル", url: null, course: "アイヌ文化施設・史跡コース", imageUrl: null},
-      {lat: 42.4528239772223, lng: 141.183436279579, spot: "フンペサパ（フンベ山）", url: null, course: "アイヌ文化施設・史跡コース", imageUrl: null},
-      {lat: 42.4120519586187, lng: 141.111087745259, spot: "愛隣学校跡", url: null, course: "アイヌ文化施設・史跡コース", imageUrl: null},
-      {lat: 42.4252013307922, lng: 141.117694026024, spot: "オカシペッ（岡志別）", url: null, course: "アイヌ文化施設・史跡コース", imageUrl: null},
-      {lat: 42.3903700737259, lng: 141.080074799846, spot: "キウシト湿原", url: null, course: "アイヌ文化施設・史跡コース", imageUrl: null}
+      { lat: 42.49061617, lng: 141.1590281, spot: "ユーカラの里（のぼりべつクマ牧場内）", description: "３大テーマパークの一つであるのぼりべつクマ牧場内にあるアイヌの生活様式を忠実に再現した文化遺産。※のぼりべつクマ牧場への入場が必要。", url: "https://bearpark.jp/yukar/", course: "アイヌ文化施設・史跡コース", imageUrl: null },
+      { lat: 42.45268515, lng: 141.1811979, spot: "登別観光交流センター「ヌプル」（アイヌ文化）", description: "アイヌ語で色の濃いという意味である「ヌプㇽ」という愛称がつく登別市観光やアイヌ文化を案内する施設。", url: "https://nupur.jp/", course: "アイヌ文化施設・史跡コース", imageUrl: null },
+      { lat: 42.45133159, lng: 141.1671914, spot: "知里幸恵 銀のしずく記念館", description: "知里幸恵の業績と幸恵を通じてアイヌ文化を広く伝える博物館。※銀のしずく記念館への入場が必要。", url: "https://www.ginnoshizuku.com/", course: "アイヌ文化施設・史跡コース", imageUrl: null },
+      { lat: 42.44713947, lng: 141.1572773, spot: "知里幸恵の墓・金成マツの碑", description: "登別出身「アイヌ神謡集」の著者である知里幸恵とその伯母金成マツの墓。", url: "", course: "アイヌ文化施設・史跡コース", imageUrl: null },
+      { lat: 42.44941749, lng: 141.1699534, spot: "知里真志保の碑", description: "登別出身のアイヌ語学者で、知里幸恵の弟である知里真志保の碑。", url: "", course: "アイヌ文化施設・史跡コース", imageUrl: null },
+      { lat: 42.47150234, lng: 141.156146, spot: "カムイワッカ", description: "神の水を指すアイヌ語地名。湧き水が流れる。", url: "", course: "アイヌ文化施設・史跡コース", imageUrl: null },
+      { lat: 42.4494596, lng: 141.1697286, spot: "ヌプルペッ（登別川）", description: "色の濃い川を意味するアイヌ語地名。登別市の名前の由来となる。", url: "", course: "アイヌ文化施設・史跡コース", imageUrl: null },
+      { lat: 42.44496824, lng: 141.1614025, spot: "アフンルパル", description: "死後の世界へつながる場所を指すアイヌ語地名。横穴が一般的だが、ここは珍しい竪穴。", url: "", course: "アイヌ文化施設・史跡コース", imageUrl: null },
+      { lat: 42.45282398, lng: 141.1834363, spot: "フンペサパ（フンベ山）", description: "「フンペ」はクジラ、「サパ」は頭を意味するアイヌ語。大きな岩山で、地元ではフンベ山と呼んでいる。", url: "", course: "アイヌ文化施設・史跡コース", imageUrl: null },
+      { lat: 42.41205196, lng: 141.1110877, spot: "愛隣学校跡", description: "幌別アイヌと英国聖公会宣教協会のジョン・バチラーによって設立された学校。", url: "", course: "アイヌ文化施設・史跡コース", imageUrl: null },
+      { lat: 42.42520133, lng: 141.117694, spot: "オカシペッ（岡志別）", description: "アイヌ語の語源にオ・カシ・ベッ（川尻・魚捕小屋・ある・川）、ウ・カッチウ・ベッ（互いに・やりを投げて突き合った・川）の２つの説がある。", url: "", course: "アイヌ文化施設・史跡コース", imageUrl: null },
+      { lat: 42.39037007, lng: 141.0800748, spot: "キウシト湿原", description: "アイヌ語で「カヤ、群生する、走り根」を意味する。絶滅危惧種として指定されるエゾホトケドジョウなど、貴重な動植物が多数生息する湿原。", url: "", course: "アイヌ文化施設・史跡コース", imageUrl: null },
+      { lat: 42.49423608, lng: 141.1438874, spot: "温泉市場（登別ブランド）", description: "登別ブランド推奨品である「北海大だこ地獄漬」「元祖たらこキムチ　登別たらこ地獄漬」を販売。", url: "http://www.onsenichiba.com/", course: "登別ブランド推奨品コース", imageUrl: null },
+      { lat: 42.49170299, lng: 141.142112, spot: "祝いの宿　登別グランドホテル", description: "登別ブランド推奨品である「手づくりバウムクーヘン」を販売。", url: "https://www.nobogura.co.jp/", course: "登別ブランド推奨品コース", imageUrl: null },
+      { lat: 42.4921534, lng: 141.1430958, spot: "大黒屋民芸店", description: "登別ブランド推奨品である「湯の香ひょうたん飴」「北海道熊笹そば」を販売。", url: "https://daikokuya-m.com/", course: "登別ブランド推奨品コース", imageUrl: null },
+      { lat: 42.4928262, lng: 141.1429727, spot: "Pizzeria ASTRA", description: "登別ブランド推奨品である「究極のマルゲリータ」を販売。", url: "https://noboribetsu-spa.jp/spot/spot0212/", course: "登別ブランド推奨品コース", imageUrl: null },
+      { lat: 42.4940231, lng: 141.1436458, spot: "藤崎わさび園", description: "登別ブランド推奨品である「わさび漬」を販売。", url: "https://marufuji-wasabi.jp/", course: "登別ブランド推奨品コース", imageUrl: null },
+      { lat: 42.45901545, lng: 141.1177978, spot: "のぼりべつ酪農館", description: "登別ブランド推奨品である「のぼりべつ牛乳」「のぼりべつ牛乳プリン」「のぼりべつとろ～りプリン」「登別チーズニュービアンカ【乳白華】」「元鬼豚生ハム」を販売。", url: "https://www.rakunoukan.com/", course: "登別ブランド推奨品コース", imageUrl: null },
+      { lat: 42.44235983, lng: 141.1572109, spot: "マルフク武澤水産", description: "登別ブランド推奨品である「らんぼっけのたらこ」を販売。", url: "", course: "登別ブランド推奨品コース", imageUrl: null },
+      { lat: 42.45021552, lng: 141.1763297, spot: "肉のあさひ", description: "登別ブランド推奨品である「のぼりべつ豚ロース味噌漬」「のぼりべつ豚ハンバーグ（粗挽）」「登別豚ジン」を販売。", url: "", course: "登別ブランド推奨品コース", imageUrl: null },
+      { lat: 42.46501205, lng: 141.1784451, spot: "わかさいも本舗登別東店", description: "登別ブランド推奨品である「鬼伝説　青鬼ピルスナー」「鬼伝説　赤鬼レッドエール」「鬼伝説　金鬼ペールエール」を販売。", url: "https://www.wakasaimo.com/shop/noboribetsuhigashi/", course: "登別ブランド推奨品コース", imageUrl: null },
+      { lat: 42.45268515, lng: 141.1811979, spot: "登別観光交流センター「ヌプル」（登別ブランド）", description: "登別にまつわるグッズや登別ブランド推奨品を多数取り揃えた売店。", url: "https://nupur.jp/shop", course: "登別ブランド推奨品コース", imageUrl: null },
+      { lat: 42.41121477, lng: 141.1044024, spot: "かめやアーニス店", description: "登別ブランド推奨品である「登別牛乳カステラ」「のぼ～る」を販売。", url: "", course: "登別ブランド推奨品コース", imageUrl: null },
+      { lat: 42.41119893, lng: 141.1044775, spot: "のぼりべつブランドショップ", description: "登別ブランド推奨品を多数取り揃えたアンテナショップ。近日ネットショッピングも利用可能に！", url: "https://www.noboribetsubrand.jp/", course: "登別ブランド推奨品コース", imageUrl: null },
+      { lat: 42.41043209, lng: 141.1101361, spot: "道南平塚食品", description: "登別ブランド推奨品である「文志郎の鹿角納豆」「北海道のわら納豆　登別わさび漬」「北海道のわら納豆　ビックリ激辛」を販売。", url: "https://nattou.co.jp/hiratsuka/", course: "登別ブランド推奨品コース", imageUrl: null },
+      { lat: 42.39110833, lng: 141.0778755, spot: "わかさいも本舗登別本店", description: "登別ブランド推奨品である「鬼伝説　青鬼ピルスナー」「鬼伝説　赤鬼レッドエール」「鬼伝説　金鬼ペールエール」を販売。", url: "https://www.wakasaimo.com/shop/noboribetsuhonten/", course: "登別ブランド推奨品コース", imageUrl: null },
+      { lat: 42.35698822, lng: 141.0501662, spot: "かめや本店", description: "登別ブランド推奨品である「登別牛乳カステラ」「のぼ～る」を販売。", url: "", course: "登別ブランド推奨品コース", imageUrl: null },
+      { lat: 42.37482371, lng: 141.0662073, spot: "冷鮮工房うす田", description: "登別ブランド推奨品である「のぼりべつホタテ燻」を販売。", url: "https://www.reisenkoubou-usuda.com/", course: "登別ブランド推奨品コース", imageUrl: null },
+      { lat: 42.49423608, lng: 141.1438874, spot: "温泉市場（登別閻魔やきそば）", description: "地獄漬用のヤンニョムジャンを隠し味に、特製練り生七味によるマイルドな辛口～大辛口にできます。\n極太平打ち麺の食感と風味を楽しめるよう、具材の大きさを調整しています。濃厚な白ゴマの風味と甘さも引き立つ奥深い辛味を加えています。", url: "http://www.onsenichiba.com/", course: "登別閻魔やきそばコース", imageUrl: null },
+      { lat: 42.49166138, lng: 141.1420985, spot: "食事処　松前", description: "登別閻魔やきそばを提供。※登別グランドホテル内\n登別グランドホテルの閻魔やきそばはクッタラ湖を模したカルデラ 形。", url: "https://www.nobogura.co.jp/dining/restaurant/", course: "登別閻魔やきそばコース", imageUrl: null },
+      { lat: 42.49431484, lng: 141.1436806, spot: "喫茶　田園", description: "季節の海鮮を使用し、秘密のタレで味付けしたピリ辛焼きそばです。\n閻魔堂を正面に見下ろす喫茶店で、クリームあんみつやパンケーキの他、ボリュームのあるオムライスがオススメメニューです。", url: "https://noboribetsu-spa.jp/spot/spot0203/", course: "登別閻魔やきそばコース", imageUrl: null },
+      { lat: 42.49371422, lng: 141.1431377, spot: "いせくら", description: "登別牛ソボロと牛ホルモンのこってりしたピリ辛の閻魔やきそばです。\n炭火焼で味わう北海道の新鮮な食材がおススメのお店です。", url: "https://www.sanpei.club/page/isekura/index.html", course: "登別閻魔やきそばコース", imageUrl: null },
+      { lat: 42.45557001, lng: 141.1774585, spot: "コーヒー＆ビストロきっさ点", description: "エビ、真ダラ等登別産の季節の魚介類の揚げ物をトッピング。\n登別漁港で水揚げされた魚介類を使った海鮮カレーやパスタも人気です。", url: "", course: "登別閻魔やきそばコース", imageUrl: null },
+      { lat: 42.45394206, lng: 141.1782545, spot: "やきとりの一平　登別店", description: "登別閻魔やきそばを提供。\n看板メニューである「室蘭やきとり」と一緒に、是非、ご賞味ください。", url: "https://www.e-ippei.com/group/", course: "登別閻魔やきそばコース", imageUrl: null },
+      { lat: 42.48637258, lng: 141.1083481, spot: "登別カントリー倶楽部レストラン", description: "登別閻魔やきそばを提供。\n閻魔大王指定の秘密のタレに近海のタコ、小松菜を組み合わせた高級感ある当店自慢の焼きそばです。", url: "http://www.noboribetsu-cc.com/clubhouse/restaurant/", course: "登別閻魔やきそばコース", imageUrl: null },
+      { lat: 42.45268139, lng: 141.1810826, spot: "ピアチェーレ・ノーチェ", description: "登別閻魔やきそばを提供。※登別市観光交流センター内", url: "http://www.sanai-hospital.or.jp/topics/detail.php?id=1162", course: "登別閻魔やきそばコース", imageUrl: null },
+      { lat: 42.45259804, lng: 141.1797052, spot: "食事＆喫茶 eファミリー", description: "地元の野菜をたっぷりと、そして登別産のホエー豚を使ったおいしい登別閻魔やきそばです。\n地元の方や観光客の方が集まる笑顔あふれる憩いの場としていきたいです。", url: "", course: "登別閻魔やきそばコース", imageUrl: null },
+      { lat: 42.40980795, lng: 141.1050278, spot: "ほろべつ屋台村　箸遊　佳乃", description: "麺はちょい辛、ひき肉そぼろを甘く味つけてあるので絶妙なバランスを楽しんで下さい！\nカウンターのみの隠れ家的なお店です。", url: "", course: "登別閻魔やきそばコース", imageUrl: null },
+      { lat: 42.42199993, lng: 141.1164373, spot: "ソーダ食堂", description: "登別産のイカや卵を使って、ボリューム出してます。\nザンギ甘口か激辛で有名な「地獄ザンギ」のどちらか選べます。\n激辛党なら迷わず「地獄ザンギ」を選ぶべし。ザンギの辛さが麺にうつり、何とも言えない激辛の刺激がたまりません。\nほかのメニューもボリュームたっぷりで食べごたえがあります。", url: "", course: "登別閻魔やきそばコース", imageUrl: null },
+      { lat: 42.41072361, lng: 141.1070174, spot: "焼肉居酒屋 ぐうちょきぱ", description: "当店では、登別閻魔やきそばを「春巻き風」にしてお出しします。\n北海道産小麦１００％の麺のコシは、油で揚げてもしっかりと残り、相性も抜群です。", url: "", course: "登別閻魔やきそばコース", imageUrl: null },
+      { lat: 42.41132847, lng: 141.1048067, spot: "ぱぴあ", description: "旨い!早い!安い!\nフードコートでも本格的な味を。\n閻魔やきそばの味付けはシンプルに閻魔大王指定のタレのみ。\nスタンダードな味わいをお楽しみください。\n※登別中央ショッピングセンターアーニス内", url: "", course: "登別閻魔やきそばコース", imageUrl: null },
+      { lat: 42.41011482, lng: 141.1062146, spot: "旬の台所くる美", description: "登別豚を使用したやきそばに、後がけソースや登別産エゾシカ肉のそぼろ等の薬味で辛さを調整できます。\n各種海鮮料理や宴会、コース料理など、色々とりそろえてます。", url: "https://shun-kurumi.com/", course: "登別閻魔やきそばコース", imageUrl: null },
+      { lat: 42.41217972, lng: 141.1067691, spot: "つぼ八 幌別店", description: "登別閻魔やきそばを提供。\n登別産タコを使用したあんかけ風のやきそばです。\nスタッフ一同ご来店をお待ちしております。", url: "https://www.tsubohachi.co.jp/shop/other/horobetsu/", course: "登別閻魔やきそばコース", imageUrl: null },
+      { lat: 42.41220935, lng: 141.1038556, spot: "旬の華 和か菜", description: "閻魔ダレをベースにやわらかだこの煮汁を足し、あんにしてからめてます。\n店主自ら仕入れる「旬・素材」を活かした美味しい和食が自慢です。\n季節の味、器、雰囲気をお楽しみください。", url: "https://shunnohana-wakana.com/", course: "登別閻魔やきそばコース", imageUrl: null },
+      { lat: 42.36920103, lng: 141.0547987, spot: "室蘭やきとり一平若草店", description: "当店自慢のやきとりのタレをたっぷり使用し作った肉みそと、閻魔大王の秘密のタレを使用した甘辛いやきそば。北海道産のホルモンが入ったホルモンやきそばです。\n1951年の創業以来、継ぎ足し使用しているタレが自慢のやきとり屋ですが、ご家族で来店される方が多く、やきとり以外のメニューも多数ご用意しております。ご来店お待ちしております。", url: "https://muroran-yakitori.com/wakakusa.html", course: "登別閻魔やきそばコース", imageUrl: null },
+      { lat: 42.37432707, lng: 141.0613112, spot: "カフェ アンジュリエ", description: "ワンハンドで食べられる、登別閻魔やきそばを使用した「新しい名物商品」を作りたいという思いから、ドーナツを考案しました！\n店舗は、バリアフリーの入口を入ると、広々とした店内にキッズスペースもあり、フリーWi-Fiもお使いいただけます。", url: "https://cafeangeller.amebaownd.com/", course: "登別閻魔やきそばコース", imageUrl: null },
+      { lat: 42.40987283, lng: 141.1059351, spot: "すまいるキッチンひなまり", description: "具材に豚ロース、竹の子、ネギ、きくらげ、むきえびを使用。\n他店にはない味をお楽しみください。", url: "", course: "登別閻魔やきそばコース", imageUrl: null }
     ];
 
-    // ★★★ 初期表示の情報を定数化 ★★★
     const INITIAL_VIEW = {
       center: { lat: 42.409441, lng: 141.1069605 },
       zoom: 13
     };
-    
+
     function initMap() {
+      const coordsMap = {};
+      locations.forEach((loc, index) => {
+        const key = `${loc.lat.toFixed(6)},${loc.lng.toFixed(6)}`;
+        if (!coordsMap[key]) {
+          coordsMap[key] = { indices: [], originalLat: loc.lat, originalLng: loc.lng };
+        }
+        coordsMap[key].indices.push(index);
+      });
+
+      const offset = 0.00007;
+      Object.values(coordsMap).forEach(group => {
+        if (group.indices.length > 1) {
+          const count = group.indices.length;
+          const angleStep = (2 * Math.PI) / count;
+          group.indices.forEach((locIndex, i) => {
+            const angle = angleStep * i;
+            locations[locIndex].lat = group.originalLat + offset * Math.cos(angle);
+            locations[locIndex].lng = group.originalLng + offset * Math.sin(angle);
+          });
+        }
+      });
+
       const dom = { map: document.getElementById('map'), hamburgerBtn: document.getElementById('hamburgerBtn'), sideMenu: document.getElementById('sideMenu'), menuOverlay: document.getElementById('menuOverlay'), modalOverlay: document.getElementById('modalOverlay'), filterModal: document.getElementById('filterModal'), tutorialModal: document.getElementById('tutorialModal'), searchListModal: document.getElementById('searchListModal'), searchInput: document.getElementById('searchInput'), spotList: document.getElementById('spotList'), };
       map = new google.maps.Map(dom.map, { center: INITIAL_VIEW.center, zoom: INITIAL_VIEW.zoom, maxZoom: 20, minZoom: 10, disableDefaultUI: true, gestureHandling: 'greedy', restriction: { latLngBounds: { north: 43.0, south: 42.0, west: 140.8646, east: 141.328 }, strictBounds: true, }, });
       setupEventListeners(dom);
@@ -402,13 +176,14 @@
         if (currentLocationMarker?.getMap()) { map.panTo(currentLocationMarker.getPosition()); animatedZoom(16); }
         else { alert('現在地が取得できていません。ブラウザの位置情報設定を確認し、許可してください。'); }
       });
-      // ★★★「初期表示に戻す」ボタンのイベントリスナーを追加 ★★★
       document.getElementById('resetViewBtn').addEventListener('click', () => {
         map.panTo(INITIAL_VIEW.center);
         animatedZoom(INITIAL_VIEW.zoom);
       });
 
-      document.getElementById('homeBtn').addEventListener('click', () => { alert('トップページに戻ります'); });
+      document.getElementById('homeBtn').addEventListener('click', () => {
+        window.location.href = 'home.html';
+      });
       document.querySelectorAll('.filter-button').forEach(button => { button.addEventListener('click', () => { activeFilter = button.dataset.course; document.querySelector('.filter-button.active').classList.remove('active'); button.classList.add('active'); updateMarkerDisplay(); setTimeout(closeAllModals, 250); }); });
       dom.searchInput.addEventListener('input', (e) => updateSpotList(e.target.value));
       document.querySelectorAll('.list-tab').forEach(tab => { tab.addEventListener('click', () => { document.querySelector('.list-tab.active').classList.remove('active'); tab.classList.add('active'); updateSpotList(dom.searchInput.value); }); });
@@ -469,11 +244,31 @@
     }
 
     function createMarker(location) {
-      const courseColorVar = getCourseColor(location.course);
-      const courseColor = getComputedStyle(document.documentElement).getPropertyValue(courseColorVar.match(/--([a-z-]+)/)[0]).trim();
-      const markerSize = 50;
-      const svgIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="${markerSize}" height="${markerSize}" viewBox="0 0 ${markerSize} ${markerSize}"><defs><filter id="dropshadow" height="130%"><feGaussianBlur in="SourceAlpha" stdDeviation="1.5"/><feOffset dx="0" dy="1" result="offsetblur"/><feComponentTransfer><feFuncA type="linear" slope="0.5"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><g filter="url(#dropshadow)"><path d="M25,2.5C14.2,2.5,2.5,14.2,2.5,25S14.2,47.5,25,47.5,47.5,35.8,47.5,25,35.8,2.5,25,2.5Z" fill="${courseColor}" stroke="#ffffff" stroke-width="2"/><text x="50%" y="50%" dominant-baseline="central" text-anchor="middle" font-family="Arial, sans-serif" font-size="22px" font-weight="bold" fill="#ffffff" paint-order="stroke" stroke="#000000" stroke-width="0.5px" stroke-opacity="0.3">${location.spot.charAt(0)}</text></g></svg>`;
-      const marker = new google.maps.Marker({ position: { lat: location.lat, lng: location.lng }, title: location.spot, icon: { url: 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgIcon))), scaledSize: new google.maps.Size(markerSize, markerSize), anchor: new google.maps.Point(markerSize / 2, markerSize / 2), }, course: location.course, });
+      const markerSize = 70; 
+
+      let iconUrl;
+      switch (location.course) {
+        case "登別閻魔やきそばコース":
+          iconUrl = "image/stamp_yakisoba.png"; 
+          break;
+        case "登別ブランド推奨品コース":
+          iconUrl = "image/stamp_brand.png"; 
+          break;
+        case "アイヌ文化施設・史跡コース":
+          iconUrl = "image/stamp_ainu.png"; 
+          break;
+      }
+
+      const marker = new google.maps.Marker({
+        position: { lat: location.lat, lng: location.lng },
+        title: location.spot,
+        icon: {
+          url: iconUrl,
+          scaledSize: new google.maps.Size(markerSize, markerSize),
+          anchor: new google.maps.Point(markerSize / 2, markerSize / 2),
+        },
+        course: location.course,
+      });
       const infoWindow = new google.maps.InfoWindow({ content: createInfoWindowContent(location), pixelOffset: new google.maps.Size(0, -32), });
       marker.addListener('click', () => { if (openInfoWindow) openInfoWindow.close(); infoWindow.open(map, marker); openInfoWindow = infoWindow; });
       return marker;
@@ -483,6 +278,7 @@
       const courseColorVar = getCourseColor(location.course);
       const courseColor = getComputedStyle(document.documentElement).getPropertyValue(courseColorVar.match(/--([a-z-]+)/)[0]).trim();
       const isDarkBg = getBrightness(courseColor) < 150;
+      
       const container = document.createElement('div');
       container.className = 'info-window-container';
       container.style.setProperty('--info-bg', courseColor);
@@ -490,8 +286,22 @@
       container.style.setProperty('--info-link', isDarkBg ? '#FFFFFF' : '#222222');
       container.style.setProperty('--info-link-border', isDarkBg ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.3)');
       container.style.setProperty('--info-link-hover-bg', isDarkBg ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.08)');
+      
       const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${location.lat},${location.lng}`;
-      container.innerHTML = `<strong>${location.spot}</strong><span class="info-course">コース: ${location.course}</span> ${location.imageUrl ? `<img src="${location.imageUrl}" alt="${location.spot}">` : ''} <div class="info-links"> ${location.url ? `<a href="${location.url}" target="_blank" rel="noopener" class="info-link">詳細を見る</a>` : ''} <a href="${directionsUrl}" target="_blank" rel="noopener" class="info-link">ここへの経路を検索</a></div>`;
+      const descriptionHtml = location.description ? `<p>${location.description.replace(/\n/g, '<br>')}</p>` : '';
+      const imageUrlHtml = location.imageUrl ? `<img src="${location.imageUrl}" alt="${location.spot}">` : '';
+      const urlLinkHtml = location.url ? `<a href="${location.url}" target="_blank" rel="noopener" class="info-link">詳細を見る</a>` : '';
+
+      container.innerHTML = `
+        <strong>${location.spot}</strong>
+        <span class="info-course">コース: ${location.course}</span>
+        ${descriptionHtml}
+        ${imageUrlHtml}
+        <div class="info-links">
+          ${urlLinkHtml}
+          <a href="${directionsUrl}" target="_blank" rel="noopener" class="info-link">ここへの経路を検索</a>
+        </div>`;
+      
       return container;
     }
 
@@ -499,7 +309,7 @@
       render: ({ count, position }) => {
         const size = count < 10 ? 45 : count < 25 ? 55 : 65;
         const fontSize = count < 10 ? 14 : count < 25 ? 16 : 18;
-        const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}"><g filter="url(#cluster-shadow)"><circle cx="${size/2}" cy="${size/2}" r="${size/2-3}" fill="#ff6b6b" stroke="rgba(255,255,255,0.8)" stroke-width="4" /><text x="50%" y="50%" dominant-baseline="central" text-anchor="middle" font-family="Arial, sans-serif" font-size="${fontSize}px" font-weight="bold" fill="white">${count}</text></g></svg>`;
+        const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}"><defs><filter id="cluster-shadow" x="-50%" y="-50%" width="200%" height="200%"><feDropShadow dx="0" dy="1" stdDeviation="2" flood-color="rgba(0,0,0,0.3)"/></filter></defs><g filter="url(#cluster-shadow)"><circle cx="${size/2}" cy="${size/2}" r="${size/2-3}" fill="#A95A68" stroke="rgba(255,255,255,0.8)" stroke-width="4" /><text x="50%" y="50%" dominant-baseline="central" text-anchor="middle" font-family="Arial, sans-serif" font-size="${fontSize}px" font-weight="bold" fill="white">${count}</text></g></svg>`;
         return new google.maps.Marker({ position, icon: { url: 'data:image/svg+xml;base64,' + btoa(svg), scaledSize: new google.maps.Size(size, size), anchor: new google.maps.Point(size/2, size/2) }, zIndex: 999, });
       }
     };
@@ -508,11 +318,24 @@
       const spotListEl = document.getElementById('spotList');
       const searchInputEl = document.getElementById('searchInput');
       const activeTab = document.querySelector('.list-tab.active');
-      searchInputEl.value = searchTerm;
+      if(searchTerm) searchInputEl.value = searchTerm;
       const currentCourseFilter = activeTab.dataset.courseFilter;
-      const filteredLocations = locations.filter(loc => currentCourseFilter === 'all' || loc.course === currentCourseFilter).filter(loc => loc.spot.toLowerCase().includes(searchTerm.toLowerCase()));
-      if (filteredLocations.length === 0) { spotListEl.innerHTML = '<li class="spot-list-item" style="text-align:center; color:#888;">該当するスポットはありません。</li>'; return; }
-      spotListEl.innerHTML = filteredLocations.map(location => { const originalIndex = locations.indexOf(location); return `<li class="spot-list-item" data-index="${originalIndex}"><div class="item-name">${location.spot}</div><div class="item-course">${location.course}</div></li>`; }).join('');
+      const normalizedSearchTerm = searchTerm.toLowerCase();
+
+      const filteredLocations = locations.filter(loc => 
+          (currentCourseFilter === 'all' || loc.course === currentCourseFilter) && 
+          loc.spot.toLowerCase().includes(normalizedSearchTerm)
+      );
+
+      if (filteredLocations.length === 0) { 
+          spotListEl.innerHTML = '<li class="spot-list-item" style="text-align:center; color:#888;">該当するスポットはありません。</li>'; 
+          return; 
+      }
+      
+      spotListEl.innerHTML = filteredLocations.map(location => { 
+          const originalIndex = locations.indexOf(location); 
+          return `<li class="spot-list-item" data-index="${originalIndex}"><div class="item-name">${location.spot}</div><div class="item-course">${location.course}</div></li>`; 
+      }).join('');
     }
 
     function getBrightness(hexColor) { const r = parseInt(hexColor.slice(1, 3), 16); const g = parseInt(hexColor.slice(3, 5), 16); const b = parseInt(hexColor.slice(5, 7), 16); return (r * 299 + g * 587 + b * 114) / 1000; }

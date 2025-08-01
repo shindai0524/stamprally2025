@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>API Test</title>
+</head>
+<body>
+    <h1>Register API Test</h1>
+    <p>このフォームを送信して、サーバーからの応答を直接確認します。</p>
+    
+    <form action="php/register.php" method="POST">
+        <div style="margin-bottom: 10px;">
+            <label>Email: <input type="text" name="email" value="test@example.com"></label>
+        </div>
+        <div style="margin-bottom: 10px;">
+            <label>Password: <input type="password" name="password" value="password123"></label>
+        </div>
+        <div style="margin-bottom: 10px;">
+            <label>Confirm Password: <input type="password" name="confirm_password" value="password123"></label>
+        </div>
+        <button type="submit">Test Register</button>
+    </form>
+</body>
+</html>
