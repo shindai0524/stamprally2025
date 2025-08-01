@@ -60,7 +60,7 @@
                 if (data.message) {
                     responseMessage.className = 'alert alert-success';
                     responseMessage.textContent = data.message;
-                    setTimeout(() => window.location.href = 'login.html', 2000);
+                    setTimeout(() => window.location.href = 'login.html', 1000);
                 } else if (data.errors) {
                     Object.keys(data.errors).forEach(key => {
                         const input = registerForm.querySelector(`[name="${key}"]`);
