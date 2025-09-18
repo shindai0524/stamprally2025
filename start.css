@@ -1,0 +1,76 @@
+/* --- 全体リセット --- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* --- body 基本設定 --- */
+body {
+  font-family: sans-serif;
+  background: url("image/backgroundlong.png") no-repeat center top;
+  background-size: cover;        /* 背景画像を全体に広げる */
+  min-height: 100vh;
+  overflow-x: hidden;            /* 横スクロール禁止 */
+  display: flex;
+  justify-content: center;
+}
+
+/* --- コンテナ --- */
+.screen-container {
+  width: 100%;
+  max-width: 600px;
+  text-align: center;
+  position: relative;            /* 子要素のabsolute基準にする */
+  padding-top: 10px;
+  min-height: 100vh;
+}
+
+/* --- ロゴ --- */
+.logo {
+  width: 75%;
+  max-width: 400px;
+  margin: 10px auto 20px auto;
+  display: block;
+}
+
+/* --- スタートボタン（画面中央配置）--- */
+.start-button {
+  position: absolute;
+  top: 45%;              /* コンテナの中央 */
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+.start-button img {
+  width: 85%;            /* 通常端末：大きめ */
+  max-width: 400px;
+  display: block;
+  margin: 0 auto;
+  cursor: pointer;
+}
+
+/* --- キャラクター（背景の一番下に配置）--- */
+.character {
+  width: 65%;
+  max-width: 350px;
+  position: absolute;    /* コンテナ基準の最下部 */
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* ============================= */
+/*   iPhone SEシリーズ専用調整   */
+/* ============================= */
+@media only screen and (max-width: 375px) and (max-height: 667px) {
+  .start-button img {
+    width: 65%;         /* SEでは少し小さめ */
+    max-width: 300px;
+  }
+  .character {
+    width: 55%;
+    max-width: 300px;
+    bottom: 0;
+  }
+}

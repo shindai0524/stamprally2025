@@ -1,0 +1,212 @@
+/* 端末幅からはみ出さない基本 */
+* { box-sizing: border-box; }
+html, body { max-width: 100%; overflow-x: hidden; }
+
+body {
+  font-family: sans-serif;
+  margin: 0;
+  padding: 180px 15px 20px;            /* ヘッダー分の余白 + 横の余白 */
+  background-color: #f4f4f4;
+  background-image: url('/image/backgroundlonglong.png');
+  background-repeat: repeat;
+  background-size: 100% auto;
+  background-position: top center;
+  min-height: 100vh;
+}
+
+/* 上部の固定背景帯 */
+.top-background {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%;
+  height: 155px;
+  background-image: url('/image/backgroundheader.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center top;
+  z-index: 90;
+}
+
+/* 上に重ねる画像（タイトル等） */
+.header-image {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%;
+  height: 155px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+  pointer-events: none;
+}
+
+.header-image img {
+  max-width: 60%;
+  height: auto;
+  object-fit: contain;
+}
+
+/* 戻るボタン */
+#backButton {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  width: 60px;
+  height: 60px;
+  background: url('/image/back.png') no-repeat center/contain;
+  border: none;
+  z-index: 110;
+  cursor: pointer;
+}
+
+/* 中央の幅制御 */
+.container {
+  max-width: 520px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+/* 入力欄（背景画像を当てるラッパー） */
+:root {
+  --field-h: 64px;     /* 全入力の基本高さ（枠画像に合わせて調整） */
+  --pad-x: 16px;       /* 入力左右のインナー余白 */
+}
+
+.input-wrapper {
+  display: flex;
+  align-items: center;           /* 縦センター */
+  width: 100%;
+  height: var(--field-h);
+  margin: 12px 0;
+  padding: 0 var(--pad-x);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100% 100%;    /* 歪みが気になるなら contain に変更可 */
+  border-radius: 8px;
+}
+
+/* 入力本体（絶対配置しない） */
+.input-wrapper input {
+  flex: 1 1 auto;                /* 横幅いっぱいに広げる */
+  min-width: 0;                  /* はみ出し防止 */
+  height: calc(var(--field-h) - 20px); /* 内側に余白 */
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 16px;
+  line-height: 1.2;
+  color: #222;
+  padding: 0;
+}
+
+.input-wrapper input::placeholder {
+  color: #8a8a8a;
+  opacity: 1;
+}
+
+/* 各項目の背景画像割り当て */
+.input-name    { background-image: url('/image/name.png'); }
+.input-tel     { background-image: url('/image/num_phone.png'); }
+.input-zip     { background-image: url('/image/num_yubin.png'); }
+.input-address { background-image: url('/image/address.png'); }
+.input-email   { background-image: url('/image/mail_address.png'); }
+
+/* 一部の枠が小さい/大きい場合は個別調整（例） */
+.input-name { height: 50px; }
+.input-tel { height: 50px; }
+.input-zip { height: 50px; }
+.input-address { height: 50px; }
+.input-email { height: 50px; }
+
+/* ====== 景品カード類（必要なページだけ） ====== */
+/* 共通：カード */
+.prize-card {
+  position: relative;
+  overflow: visible;
+  background-image: url('/image/prize_background.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  padding: 15px;
+  margin: 60px 0 20px;
+  border-radius: 15px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+/* 共通：オーバーレイ（比率維持・位置固定） */
+/* 共通: オーバーレイ画像 */
+.prize-overlay {
+  position: absolute;
+  top: -25px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 5;
+  pointer-events: none;
+  display: block;
+
+  width: auto;
+  height: auto;
+  max-width: 100%; /* 横は画面幅に依存させないように */
+}
+
+/* 参加賞（縦長め） */
+.prize-overlay-sanka {
+  height: 45px;   /* 高さを基準に指定 */
+  width: auto;    /* 横は自動 */
+}
+
+/* B / A / Special（横長） */
+.prize-overlay-b,
+.prize-overlay-a,
+.prize-overlay-special {
+  height: 45px;   /* 少し低めに統一 */
+  width: auto;
+}
+
+/* カード内のメイン画像スタイル（※オーバーレイは除外!） */
+.prize-card > img:not(.prize-overlay) {
+  width: 90%;
+  height: auto;
+  margin: 10px 0;
+  border-radius: 5px;
+}
+
+
+.entry-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: inline-block;
+  width: auto;
+  margin-top: 20px;
+}
+
+.entry-button img {
+  width: 140px;
+  height: auto;
+  display: block;
+}
+
+.entry-button:disabled img {
+  filter: grayscale(100%);
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.prize-condition {
+  margin-top: 8px;
+  margin: 8px auto 0;    /* 中央に配置 */
+  font-size: 14px;
+  line-height: 1.5em;
+  white-space: pre-line; /* HTML内の改行を反映 */
+  max-width: 80%;
+}
+
+/* ====== ちょいレスポンシブ ====== */
+@media (min-width: 480px) {
+  :root { --field-h: 72px; }
+  .header-image img { max-width: 50%; }
+}

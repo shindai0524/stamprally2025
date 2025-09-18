@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>新規登録</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div id="popup-message" class="popup-message"></div>
+    <div class="background">
+        <div class="container">
+            <img src="image/logo.png" alt="ロゴ" class="logo">
+            <img src="image/title_register.png" alt="新規登録" class="title">  
+            <form id="register-form" action="php/register.php" method="post" novalidate>
+                    <div class="form-group">
+                        <input type="text" name="email" id="email-input" class="form-control" placeholder="メールアドレス">
+                        <span class="invalid-feedback"></span>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" name="password" id="password-input" class="form-control" placeholder="パスワード(6文字以上・半角英数字)">
+                        <span class="invalid-feedback"></span>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" name="confirm_password" id="confirm-password-input" class="form-control" placeholder="パスワード確認">
+                        <span class="invalid-feedback"></span>
+                    </div>
+                <img src="image/register_button.png" alt="新規登録" id="register-button" class="submit-button">
+            </form>
+            
+            <a href="login.html" class="link-to-login"> <img src="image/existing_account_link.png" alt="既にアカウントを持っている方"> </a>
+
+
+        </div>
+    </div>
+
+    <script>
+    const sessionId = localStorage.getItem('session_id');
+    if (sessionId) {
+        fetch('php/verify_session.php', {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + sessionId
+            }
+        })
+        .then(response => {
+            if (response.ok) { // HTTPステータスが200番台の場合
+                // セッションが有効なのでホーム画面へ遷移
+                window.location.href = 'home.php';
+            } else {
+                // セッションが無効なので、ローカルストレージを空にする
+                localStorage.removeItem('session_id');
+            }
+        })
+        .catch(error => {
+            console.error('Session verification request failed:', error);
+        });
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+        const registerForm = document.getElementById('register-form');
+        const registerButton = document.getElementById('register-button');
+
+        const popupMessage = document.getElementById('popup-message');
+        function showPopupMessage(message, isSuccess) {
+            popupMessage.textContent = message;
+            popupMessage.className = `popup-message ${isSuccess ? 'success' : 'error'} show`;
+            setTimeout(() => { popupMessage.classList.remove('show'); }, 3000);
+        }
+
+        if (registerButton) {
+            registerButton.addEventListener('click', function() {
+                registerForm.dispatchEvent(new Event('submit', { cancelable: true }));
+            });
+        }
+
+        registerForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+            document.querySelectorAll('.invalid-feedback').forEach(el => el.textContent = '');
+
+            const formData = new FormData(registerForm);
+
+            fetch(registerForm.action, { method: 'POST', body: formData })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    showPopupMessage(data.message, true);
+                    setTimeout(() => window.location.href = 'login.html', 1000);
+                } else if (data.errors) {
+                    Object.keys(data.errors).forEach(key => {
+                        const input = registerForm.querySelector(`[name="${key}"]`);
+                        if (input) {
+                            input.classList.add('is-invalid');
+                            const feedback = input.nextElementSibling;
+                            if (feedback && feedback.classList.contains('invalid-feedback')) {
+                                feedback.textContent = data.errors[key];
+                            }
+                        }
+                    });
+               } else {
+                    showPopupMessage(data.error || '不明なエラーが発生しました。', false);
+                }
+            })
+            .catch(error => {
+                showPopupMessage('リクエスト中にエラーが発生しました。', false);
+                console.error('Error:', error);
+            });
+        });
+    });
+    </script>
+</body>
+</html>

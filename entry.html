@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>景品応募フォーム</title>
+  <link rel="stylesheet" href="entry.css">
+</head>
+<body>
+  <div class="top-background"></div>
+  <div class="header-image">
+  <img src="/image/entry_header.png" alt="ヘッダーに重ねる画像">
+  </div>
+
+  <button id="backButton" onclick="location.href='home.php'"></button>
+
+  <div class="container">
+    <form id="userForm">
+      <div class="input-wrapper input-name">
+        <input type="text" id="name" placeholder="氏名" required>
+      </div>
+      <div class="input-wrapper input-tel">
+        <input type="tel" id="tel" placeholder="電話番号" required>
+      </div>
+      <div class="input-wrapper input-zip">
+        <input type="text" id="zip" placeholder="郵便番号" required>
+      </div>
+      <div class="input-wrapper input-address">
+        <input type="text" id="address" placeholder="住所" required>
+      </div>
+      <div class="input-wrapper input-email">
+        <input type="email" id="email" placeholder="メールアドレス" required>
+      </div>
+    </form>
+  </div>
+
+
+    <div id="prizes">
+      <div class="prize-card">
+        <img class="prize-overlay prize-overlay-sanka" src="/image/sanka_prize.png" alt="上部画像">
+        <br>
+        <img src="image/participation.png" alt="参加賞">
+
+        <!-- 応募条件 -->
+        <div class="prize-condition">
+          <h3>オリジナルトートバッグ(アイヌ文様入り)</h3>
+          先着　200名様
+
+          <h3>参加賞の応募条件</h3>
+          登別ブランド推奨品を購入してクイズに
+          正解しデジタルスタンプを1個獲得
+          ＋登別閻魔やきそばを食べてクイズに
+          正解しデジタルスタンプを1個獲得  
+          ＋アイヌ文化関連施設又は史跡でクイズに
+          正解しデジタルスタンプを1個獲得
+        </div>
+
+        <button class="entry-button" data-prize="participation">
+          <img src="/image/entry_button.png" alt="応募するボタン">
+        </button>
+      </div>
+
+      <div class="prize-card">
+        <img class="prize-overlay prize-overlay-b" src="/image/b_prize.png" alt="上部画像">
+        <br>
+        <img src="image/prize.png" alt="抽選賞B">
+
+        <div class="prize-condition">
+          <h3>登別ブランド推奨品ギフトセット</h3>
+          3000円相当　20名様
+
+          <h3>抽選賞B賞の応募条件</h3>
+          参加賞の応募条件
+          ＋登別アイヌ文化関連施設又は史跡で
+          クイズに正解しデジタルスタンプを1個獲得
+        </div>
+        <button class="entry-button" data-prize="b">
+          <img src="/image/entry_button.png" alt="応募するボタン">
+        </button>
+      </div>
+
+      <div class="prize-card">
+        <img class="prize-overlay prize-overlay-a" src="/image/a_prize.png" alt="上部画像">
+        <br>
+        <img src="image/prize.png" alt="抽選賞A">
+        <div class="prize-condition">
+          <h3>登別ブランド推奨品ギフトセット</h3>
+          5000円相当　7名様
+
+          <h3>抽選賞A賞の応募条件</h3>
+          抽選賞B賞の応募条件
+          ＋登別ブランド推奨品を購入又は登別閻魔やきそばを食べてクイズに正解し
+          デジタルスタンプを1個獲得
+          ＋アイヌ文化関連施設又は史跡でクイズに正解しデジタルスタンプを1個獲得
+        </div>
+        <button class="entry-button" data-prize="a">
+          <img src="/image/entry_button.png" alt="応募するボタン">
+        </button>
+      </div>
+
+      <div class="prize-card">
+        <img class="prize-overlay prize-overlay-special" src="/image/special_prize.png" alt="上部画像">
+        <br>
+        <img src="image/special.png" alt="特賞">
+        <div class="prize-condition">
+          <h3>登別共通宿泊利用券</h3>
+          3万円相当　1名様
+
+          <h3>抽選賞特賞の応募条件</h3>
+          抽選賞A賞の応募条件
+          ＋登別ブランド推奨品を購入又は登別閻魔やきそばを食べてクイズに正解し
+          デジタルスタンプを2個獲得
+          ＋アイヌ文化関連施設又は史跡でクイズに正解しデジタルスタンプを1個獲得
+        </div>
+        <button class="entry-button" data-prize="special">
+          <img src="/image/entry_button.png" alt="応募するボタン">
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="entry.js"></script>
+</body>
+</html>

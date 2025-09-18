@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>クイズ</title>
+  <link rel="stylesheet" href="quiz.css">
+</head>
+<body>
+  <div id="quizContainer" class="quiz-container">
+    <!-- 問題アイコン -->
+    <img src="image/question_icon.png" alt="Question" class="question-icon">
+
+    <!-- 問題文セクション -->
+    <div id="quizSection">
+      <h2 id="quizQuestion">問題文</h2>
+    </div>
+
+    <!-- 正解セクション -->
+    <div id="correctSection" class="result-section hidden">
+      <!-- ★ 空の h3。quiz.js から messages.js 経由で挿入 -->
+      <h3 id="correctMessage" style="white-space: pre-line;"></h3>
+      <img id="correctStampImg" class="stamp-result-img" src="" alt="スタンプ画像" />
+      <!-- 正解時のみ表示される戻るボタン -->
+      <button id="goHomeFromCorrect" class="img-btn home-btn hidden"></button>
+    </div>
+
+    <!-- 不正解セクション -->
+    <div id="wrongSection" class="result-section hidden">
+      <!-- ★ 空にして quiz.js 側から挿入 -->
+      <h3 style="white-space: pre-line;"></h3>
+      <img id="wrongStampImg" class="stamp-result-img" src="/image/incorrect_answer.png" alt="キャラ画像" />
+      <button class="img-btn retry-btn" onclick="retryQuiz()">もう一度挑戦する</button>
+    </div>
+  </div>
+
+  <!-- ★ボタンを外に出すための置き場 -->
+  <div id="quizExtraButtons"></div>
+
+  <!-- 選択肢セクション -->
+  <div id="quizOptions" class="choices"></div>
+
+  <!-- JavaScriptを外部化 -->
+  <!-- messages.js を必ず先に読み込む -->
+  <script src="messages.js"></script>
+  <script src="quiz.js"></script>
+</body>
+</html>

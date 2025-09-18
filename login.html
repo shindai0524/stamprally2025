@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>ログイン</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div id="popup-message" class="popup-message"></div>
+    <div class="background">
+        <div class="container">
+            <img src="image/logo.png" alt="ロゴ" class="logo">
+            <img src="image/title_login.png" alt="ログイン" class="title">    
+            <form id="login-form" action="php/login.php" method="post" novalidate>
+                <div class="form-group">
+                    <input type="text" name="email" id="email-input" class="form-control" placeholder="メールアドレス">
+                    <span class="invalid-feedback"></span>
+                </div>
+                <div class="form-group">
+                    <div class="password-input-wrapper">
+                        <input type="password" name="password" id="password-input" class="form-control" placeholder="パスワード">
+                        <button type="button" class="password-toggle-btn" id="password-toggle">
+                            <i class="far fa-eye" id="eye-icon"></i>
+                        </button>
+                    </div>
+                    <span class="invalid-feedback"></span>
+                </div>
+                <img src="image/login_button.png" alt="ログイン" id="login-button" class="submit-button">
+            </form>
+            <a href="register.html" class="link-to-register"> 
+                <img src="image/new_registration_is_here.png" alt="新規登録はこちら"> 
+            </a>
+        </div>
+    </div>
+
+    <!-- JSを外部ファイルとして読み込む -->
+    <script src="login.js"></script>
+</body>
+</html>

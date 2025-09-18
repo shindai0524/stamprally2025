@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>応募完了</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="entry_complete.css">
+</head>
+<body>
+  <div class="complete-container">
+    <p class="complete-message" id="completeMessage">応募が完了しました！</p>
+    <button class="back-button" id="back-to-home-button">
+      <img src="/image/close.png" alt="戻る">
+    </button>
+  </div>
+  
+  <div id="popup-overlay" class="hidden">
+      <div id="popup-window">
+          <h3>アンケートにご協力ください</h3>
+            <form id="survey-form">
+                <div class="question">
+                    <p>何をご覧になってスタンプラリーに参加しましたか？</p>
+                    <input id="q1-a" type="radio" name="know_method" value="ポスター・リーフレット" checked><label for="q1-a">ポスター・リーフレット</label><br>
+                    <input id="q1-b" type="radio" name="know_method" value="新聞"><label for="q1-b">新聞</label><br>
+                    <input id="q1-c" type="radio" name="know_method" value="フリーペーパー"><label for="q1-c">フリーペーパー</label><br>
+                    <input id="q1-d" type="radio" name="know_method" value="SNS広告"><label for="q1-d">SNS広告</label><br>
+                </div>
+                <div class="question">
+                    <p>登別閻魔やきそばは知っていましたか？</p>
+                    <input id="q2-a" type="radio" name="knew_is_not_is_yakisoba" value="知っていた" checked><label for="q2-a">知っていた</label><br>
+                    <input id="q2-b" type="radio" name="knew_is_not_is_yakisoba" value="知らなかった"><label for="q2-b">知らなかった</label><br>
+                </div>
+                <div class="question">
+                    <p>登別ブランド推奨品は知っていましたか？</p>
+                    <input id="q3-a" type="radio" name="knew_is_not_brand" value="知っていた" checked><label for="q3-a">知っていた</label><br>
+                    <input id="q3-b" type="radio" name="knew_is_not_brand" value="知らなかった"><label for="q3-b">知らなかった</label><br>
+                </div>
+                <div class="question">
+                    <p>登別閻魔やきそばや登別ブランド推奨品をまた食べたいと思いますか？</p>
+                    <input id="q4-a" type="radio" name="think_is_not_is" value="思う" checked><label for="q4-a">思う</label><br>
+                    <input id="q4-b" type="radio" name="think_is_not_is" value="思わない"><label for="q4-b">思わない</label><br>
+                </div>
+                <div class="question">
+                    <p>当イベントを通して登別の魅力やアイヌ文化について知ることができましたか？</p>
+                    <input id="q5-a" type="radio" name="know_can_be_is_not_is" value="できた" checked><label for="q5-a">できた</label><br>
+                    <input id="q5-b" type="radio" name="know_can_be_is_not_is" value="できない"><label for="q5-b">できない</label><br>
+                </div>
+                <div class="buttons">
+                    <button type="submit">送信</button>
+                </div>
+            </form>
+          </div>
+        </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // 応募完了メッセージの表示処理
+        const product = localStorage.getItem("appliedProduct");
+        const message = document.getElementById("completeMessage");
+        if (product) {
+            message.innerHTML = `「${product}」への応募が完了しました！<br>ご参加ありがとうございました。`;
+        }
+
+        const surveyPopup = document.getElementById('popup-overlay');
+        const surveyForm = document.getElementById('survey-form');
+        const backButton = document.getElementById('back-to-home-button');
+
+        // 「戻る」ボタンがクリックされたときの処理
+        if (backButton) {
+            backButton.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (localStorage.getItem('show_participation_survey') === 'true') {
+                    if (surveyPopup) { surveyPopup.classList.remove('hidden'); }
+                    localStorage.removeItem('show_participation_survey');
+                } else {
+                    window.location.href = 'home.php';
+                }
+            });
+        }
+
+        // アンケートフォームの「送信」ボタンの処理
+        if (surveyForm) {
+            surveyForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const formData = new FormData(surveyForm);
+                const sessionId = localStorage.getItem('session_id');
+
+                fetch('php/submit_participation_survey.php', {
+                    method: 'POST',
+                    headers: { 'Authorization': 'Bearer ' + sessionId },
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('アンケートへのご協力、誠にありがとうございました！');
+                        // ▼▼▼ 修正点：ポップアップを閉じる代わりにhome.phpへ移動 ▼▼▼
+                        window.location.href = 'home.php';
+                    } else {
+                        alert('エラー: ' + data.error);
+                    }
+                })
+                .catch(error => {
+                  console.error('Submit Error:', error);
+                  alert('アンケートの送信に失敗しました。');
+                });
+            });
+        }
+    });
+</script>
+
+</body>
+</html>

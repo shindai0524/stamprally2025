@@ -1,0 +1,185 @@
+/* 全体背景 */
+body {
+  margin: 0;
+  font-family: sans-serif;
+  background: url("../image/background.png") no-repeat center top;
+  background-size: cover;
+  min-height: 100vh;
+  color: #333;
+  padding-top: 180px; /* ヘッダー分の余白 */
+}
+
+/* 背景付きヘッダー */
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 155px;
+  background: url("../image/backgroundheader.png") no-repeat center top;
+  background-size: cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  z-index: 1000;
+}
+
+/* ロゴ */
+.header .logo img {
+  height: 140px;
+  width: auto;
+}
+
+/* タイトル */
+.header h1 {
+  margin: 0;
+  font-size: 35px;
+  font-weight: bold;
+  color: #5a3e2b; /* 明るめの焦げ茶 */
+}
+
+/* コンテンツ */
+.content {
+  margin: 20px auto;
+  max-width: 900px;
+  text-align: center;
+}
+
+/* 登録者数 */
+.info {
+  margin: 20px 0 30px;
+  font-size: 26px;
+  font-weight: bold;
+  color: #222;
+  text-align: center;
+}
+
+/* カレンダー全体 */
+.calendar {
+  margin: 20px auto 40px;
+  width: 90%;
+  max-width: 800px;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+/* 曜日行 */
+.calendar thead th {
+  background-color: #5a3e2b;
+  color: #fff;
+  padding: 8px;
+  text-align: center;
+  border: 1px solid #ccc;
+}
+
+/* 日付セル */
+.calendar td {
+  width: 14.2%;
+  height: 80px;
+  vertical-align: top;
+  border: 1px solid #ccc;
+  padding: 5px;
+  text-align: left;
+  background-color: rgba(255, 255, 255, 0.8);
+  position: relative;
+}
+
+/* 日付数字 */
+.calendar td .day {
+  font-weight: bold;
+  color: #333;
+}
+
+/* 登録者数 */
+.calendar td .count {
+  display: block;
+  margin-top: 5px;
+  font-size: 12px;
+  color: #5a3e2b;
+}
+
+/* 空の日 */
+.calendar td.empty {
+  background-color: rgba(240, 240, 240, 0.5);
+}
+
+/* 月切替ボタン */
+.calendar-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  margin: 20px 0;
+  font-size: 20px;
+  font-weight: bold;
+  color: #5a3e2b;
+}
+
+.calendar-controls button {
+  background: #5a3e2b;
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin: 0 10px;
+}
+
+.calendar-controls button:hover {
+  background: #3e281d;
+}
+
+/* CSV出力ボタンの配置 */
+form {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 60px;
+}
+
+/* CSV出力ボタン（共通） */
+form button {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 6px;
+  background-color: #5a3e2b;
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* hover時 */
+form button:hover {
+  background-color: #3e281d;
+}
+
+/* 一括ダウンロード専用（色反転） */
+form button.allzip {
+  background-color: #fff;
+  color: #5a3e2b;
+  border: 2px solid #5a3e2b;
+  font-weight: bold;
+}
+
+form button.allzip:hover {
+  background-color: #f2f2f2;
+}
+
+/* ✅ レスポンシブ調整 */
+@media screen and (max-width: 600px) {
+  .header h1 {
+    font-size: 24px;
+  }
+
+  .info {
+    font-size: 20px;
+  }
+
+  form button {
+    flex: 1 1 100%;
+    max-width: 90%;
+  }
+}

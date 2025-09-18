@@ -1,0 +1,898 @@
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+}
+
+body {
+  background-image: url('/image/backgroundlong.png');
+  background-size: cover;
+  background-position: center bottom -900px;
+  background-repeat: no-repeat;
+}
+
+/* 背景（固定） */
+.top-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 155px;
+  background-image: url('/image/backgroundheader.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center top;
+  z-index: 90;
+}
+
+/* スタンプ一覧位置調整 */
+main {
+  margin-top: 200px;
+  padding-bottom: 160px;
+}
+
+/* ロゴ */
+#logoHeader {
+  position: fixed;
+  top: 15px;
+  left: 20px;
+  z-index: 101;
+}
+
+#logoHeader img {
+  height: 105px;
+  width: auto;
+}
+
+/* ヘッダー */
+header {
+  position: fixed;
+  top: 40px;
+  right: 10px;
+  display: flex;
+  flex-direction: row-reverse;
+  gap: 10px;
+  z-index: 101;
+}
+
+header button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+header .menu img {
+  width: 55px;
+  height: 61px;
+}
+
+header .help img {
+  width: 45px;
+  height: 63px;
+}
+
+/* タブ */
+#tabButtons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 80px;
+  margin-bottom: 1em;
+  position: absolute;
+  top: 85px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 80;
+
+  white-space: nowrap;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+}
+
+/* ボタン自体の余白・枠線をリセット */
+#tabButtons button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+#tabButtons button img {
+  height: 30px;
+  width: 100px;
+  display: block;
+  transition: filter 0.3s ease; /* スムーズに暗くする */
+}
+
+/* アクティブ時は少し暗く */
+#tabButtons button.active img {
+  filter: brightness(0.7);
+}
+
+
+/* メニュー・ヘルプモーダル */
+#menuList,
+#helpList {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-color: transparent;
+
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+
+  padding: 80px 40px 40px;
+  width: 250px;
+  height: 350px;
+  overflow-y: auto;
+  z-index: 105;
+
+  overflow: hidden;              /* ← overflow-y:auto; を hidden に */
+  overscroll-behavior: contain;  /* モーダル上のスクロール連鎖を防止 */
+  touch-action: none;            /* モバイルのスワイプ/ピンチ無効（タップは可） */
+}
+
+#menuList {
+  background-image: url('/image/menu_modal.png');
+}
+
+#helpList {
+  background-image: url('/image/help_modal.png');
+}
+
+#menuList ul,
+#helpList ul {
+  list-style: none !important;
+  margin: 0;
+  padding: 0;
+}
+
+#menuList li,
+#helpList li {
+  margin-bottom: 10px;
+  text-align: left;
+}
+
+/* ★ 共通画像スタイル（displayやmarginのみ、widthは指定しない） */
+#menuList li a img,
+#helpList li a img {
+  display: inline-block;
+  height: auto;
+  margin: 0px ;
+}
+
+/* ===== メニュー項目の個別スタイル ===== */
+
+.menu-warning {
+  margin-top: 8px;         /* 上の余白 */
+  margin-bottom: 15px;      /* 下の余白 */
+  text-align: left;
+  margin-left: 18px;
+}
+
+.menu-warning img {
+  width: 120px;
+  height: auto;             /* 高さを自動調整（もしくは固定にしたい場合は例: height: 60px;） */
+  display: inline-block;
+  margin: 0 ;
+}
+
+.menu-map {
+  margin-top: 51px;
+  margin-bottom: 15px;
+  text-align: left;
+  margin-left: 18px;
+}
+
+.menu-map img {
+  width: 117px;
+  height: auto;
+  display: inline-block;
+  margin: 0 ;
+}
+
+.menu-entry {
+  margin-top: 49px;
+  margin-bottom: 15px;
+  text-align: left;
+  margin-left: 18px;
+}
+
+.menu-entry img {
+  width: 160px;
+  height: auto;
+  display: inline-block;
+  margin: 0 ;
+}
+
+.menu-prizelist {
+  margin-top: 46px;
+  margin-bottom: 15px;
+  text-align: left;
+  margin-left: 20px;
+}
+
+.menu-prizelist img {
+  width: 134px;
+  height: auto;
+  display: inline-block;
+  margin: 0;
+}
+
+.log-out {
+  margin-top: 50px;       /* 上の余白（他とバランスを取って調整） */
+  margin-bottom: 15px;    /* 下の余白 */
+  text-align: left;
+  margin-left: 20px;
+}
+
+.log-out img {
+  width: 120px;           /* ボタン画像の幅（他と調整可能） */
+  height: auto;
+  display: inline-block;
+  margin: 0;
+}
+
+
+/* ===== ヘルプ項目の個別スタイル ===== */
+
+.help-home {
+  margin-top: 110px;
+  margin-bottom: 10px;
+  text-align: left;
+  margin-left: 20px;
+}
+
+.help-home img {
+  width: 110px;
+  height: auto;
+  opacity: 0.95;
+  display: inline-block;
+  margin: 0;
+}
+
+.help-qr {
+  margin-top: 70px;
+  margin-bottom: 10px;
+  padding: 5px;
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.05);
+  text-align: left;
+  margin-left: 15px;
+}
+
+.help-qr img {
+  width: 150px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+/* 閉じるボタン */
+/* --- メニュー用の閉じるボタン --- */
+#menuList .close-btn {
+  position: absolute;
+  top: 17px;
+  right: 45px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  z-index: 10;
+}
+
+#menuList .close-btn img {
+  width: 40%;
+  height: 40%;
+  object-fit: contain;
+}
+
+
+/* --- ヘルプ用の閉じるボタン --- */
+#helpList .close-btn {
+  position: absolute;
+  top: 115px; /* ← 例：位置を変える */
+  right: 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  width: 28px;  /* ← 例：サイズを変える */
+  height: 28px;
+  padding: 0;
+  z-index: 10;
+}
+
+#helpList .close-btn img {
+  width: 60%;
+  height: 60%;
+  object-fit: contain;
+}
+
+
+/* スタンプ一覧 */
+.genre-block {
+  margin-bottom: 2em;
+  text-align: center;
+}
+
+.genre-title {
+  font-weight: bold;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+  font-size: 1.2em;
+}
+
+.stamp-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  justify-items: center;
+  gap: 20px;
+  max-width: 320px;
+  margin: 0 auto;
+}
+
+.stamp {
+  width: 90px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: transparent;
+  cursor: pointer;
+}
+
+.stamp-icon {
+  width: 70px;
+  height: 70px;
+  border: none; /* ← 枠線を消す */
+  background-color: transparent; /* ← 背景色なしに */
+  background-image: url('/image/stamp.png'); /* ← ここで丸枠画像を指定 */
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  overflow: visible;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.course-yakisoba .stamp-icon img {
+  width: 112%;
+  height: 112%;
+  margin-top: -7px;
+  margin-left: 2px;
+  object-fit: cover; /* coverにすると枠からはみ出る場合あり */
+}
+
+.course-brand .stamp-icon img {
+  width: 113%;
+  height: 113%;
+  margin-top: -9px;
+  margin-left: 0px;
+  object-fit: cover; /* coverにすると枠からはみ出る場合あり */
+}
+
+.course-ainu .stamp-icon img {
+  width: 120%;
+  height: 120%;
+  margin-top: 2px;
+  margin-left: 0px;
+  object-fit: cover; /* coverにすると枠からはみ出る場合あり */
+}
+
+.stamp-icon img.semi-transparent {
+  opacity: 0.1;
+}
+
+.stamp-name {
+  font-size: 0.6em;               /* 小さめの文字に */
+  text-align: center;
+  margin-top: 10px;
+  max-width: 90px;               /* 幅を少し広げる */
+  line-height: 1.2;              /* 行間を少し詰める */
+  white-space: normal;           /* 折り返しを許可 */
+  overflow-wrap: break-word;     /* 単語内でも改行可 */
+  word-break: break-word;        /* 単語の途中で改行可 */
+}
+
+/* ポップアップ本体：中央に固定＆最前面 */
+.popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10010; /* 他モーダルより前に */
+  
+  background: url("/image/background_popup.png") no-repeat center/cover;
+  width: min(70svw, 560px);
+  max-height: 80vh;
+  padding: 16px 18px 22px;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+}
+
+
+.popup img {
+  width: 110px;
+  height: 170px;
+  display: block;
+  margin: 0 auto 10px;
+}
+
+/* 画像矢印ボタン（黒丸は使わない） */
+.nav-btn {
+  position: absolute;
+  top: 40%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 60px;
+  border: none;
+  background: transparent;
+  color: transparent;
+  font-size: 0;
+  border-radius: 0;
+  box-shadow: none;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  cursor: pointer;
+  z-index: 1; /* 画像より手前に */
+}
+.nav-btn:hover
+#prevImage { left: 8px;  background-image: url("/image/left_arrow.png"); }
+#nextImage { right: 8px; background-image: url("/image/right_arrow.png"); }
+
+
+/* 左右それぞれの画像 */
+#prevImage { left: 8px;  background-image: url("/image/left_arrow.png"); }
+#nextImage { right: 8px; background-image: url("/image/right_arrow.png"); }
+
+.popup button {
+  display: block;
+  margin: 10px auto 0;
+}
+
+/* 下部中央に配置（位置は変えない） */
+.popup-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: block;
+  margin: 12px auto 0;  /* 中央寄せ */
+  width: 100px;          /* 画像サイズ調整 */
+  height: auto;
+}
+
+.popup-close img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+
+
+/* モーダル */
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  border-radius: 10px;
+  padding: 20px 20px 60px;
+  width: 90%;
+  max-width: 300px;
+  z-index: 200;
+  text-align: center;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+}
+
+.modal img {
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.help-controls {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+/* 左下キャラ */
+.fixed-character {
+  position: fixed;
+  bottom: -30px;
+  left: 5px;
+  z-index: 101;
+  width: 110px;
+}
+
+.fixed-character img {
+  width: 220%;
+  height: auto;
+}
+
+/* 固定QRボタン */
+#qrFixedButton {
+  position: fixed;
+  bottom: 50px;
+  right: 55px;
+  z-index: 101;
+  width: 110px;
+  height: 110px;
+  display: block;
+}
+
+#qrFixedButton img {
+  width: 130%;
+  height: 130%;
+  object-fit: contain;
+}
+
+/* 共通 */
+.hidden {
+  display: none;
+}
+
+.semi-transparent {
+  opacity: 0.4;
+}
+
+/* 非表示ユーティリティ */
+.hidden { display: none !important; }
+
+/* 画面全体を覆うモーダルレイヤー */
+#helpViewer {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,.5);
+  z-index: 1000;
+}
+
+/* 中央のビューアボックス：幅を明示して画像を拡げる土台を作る */
+.help-viewer {
+  position: relative;
+  width: min(92vw, 900px);    /* ← ここで“コンテナ幅”を決める（重要） */
+  max-height: 86vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 説明画像：コンテナ幅いっぱい、高さは画面に収まる範囲まで */
+.help-image {
+  display: block;
+  width: 90%;                /* ← 画像はコンテナに合わせて広がる */
+  height: auto;
+  max-height: 80vh;          /* ← 画面に収めたい上限をここで調整 */
+  border-radius: 12px;
+  margin: 0 auto;
+}
+
+/* ── 競合していた古いルールは削除してください ──
+.help-viewer img.help-image { ... } などの重複は不要
+*/
+
+/* 矢印（画像の外側に配置） */
+.help-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  z-index: 1001;
+}
+.help-nav img { width: 48px; height: auto; display: block; }
+
+/* 画像サイズに連動して“ちょい外側”に置く（%やtransformで安定配置） */
+.help-nav.left  { left: -20px;  transform: translate(-170%, -50%); }  /* 左へ外出し */
+.help-nav.right { right: -20px; transform: translate(170%,  -50%); }  /* 右へ外出し */
+
+/* 画面が狭いときは内側に寄せる */
+@media (max-width: 480px) {
+  .help-nav.left  { left: 8px;  transform: translate(0, -50%); }
+  .help-nav.right { right: 8px; transform: translate(0, -50%); }
+}
+
+/* 閉じる（画像の下中央） */
+.help-close {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  z-index: 1001;
+}
+.help-close img { width: 100px; height: auto; display: block; }
+
+
+/* （必要なら）モーダル中は背景スクロール禁止にする */
+body.modal-open { overflow: hidden; } 
+
+
+
+/* 初期非表示 */
+.hidden {
+  display: none !important;
+}
+
+/* ポップアップ全体 */
+.warning-popup {
+  position: fixed;
+  inset: 0;
+  background-color: transparent; /* 黒い背景を完全除去 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+/* ポップアップ枠（画像背景はここで表示） */
+.warning-popup-content {
+  background: none;
+  padding: 0;
+  border: none;
+  width: 200%;
+  max-width: 600px;
+  position: relative;
+}
+
+/* 背景画像を表示するエリア */
+.warning-popup-inner {
+  background-image: url('/image/warning_modal.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  width: 100%;
+  height: 480px; /* 背景画像の高さ */
+  position: relative;
+  box-sizing: border-box;
+
+  /* スクロールさせない */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+
+/* テキスト領域 */
+.warning-text {
+  width: 80%;             /* テキスト幅調整 */
+  height: 70%;            /* 高さを制限して内部でスクロール */
+  overflow-y: auto;
+  background-color: transparent;
+  color: #000;
+  font-size: 14px;
+  padding-right: 10px;
+  padding-left: 10px;
+}
+
+/* 閉じるボタン */
+.warning-popup .close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 32px;
+  height: 32px;
+  background: none;
+  border: none;
+  z-index: 10;
+}
+
+.warning-popup .close-btn img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+
+/* --- 初回アンケートポップアップ用スタイル (修正版) --- */
+
+#popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;    /* 垂直方向中央揃え */
+    justify-content: center; /* 水平方向中央揃え */
+    z-index: 9999;
+}
+
+#popup-window {
+    background-image: url('/image/background.png'); 
+    background-size: cover;
+    padding: 20px 30px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    width: 90%;
+    max-width: 400px;
+    text-align: left; /* 質問文を左揃えに */
+    color: #333;      /* 文字色を黒に */
+}
+
+#popup-window h3 {
+    text-align: center;
+    margin-top: 0;
+}
+
+#popup-window .question {
+    margin-bottom: 20px;
+}
+
+#popup-window .question p {
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+#popup-window .question label {
+    margin-left: 5px;
+    cursor: pointer;
+}
+
+#popup-window .buttons {
+    text-align: center; /* ボタンを中央に配置 */
+    margin-top: 25px;
+}
+
+#popup-window button[type="submit"] {
+    background-color: #594F3D;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+/* ポップアップを非表示にするためのクラス */
+.hidden {
+    display: none !important;
+}
+
+.popup-images-vertical {
+  display: flex;
+  flex-direction: column;
+}
+
+.popup-images-vertical img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.popup-image-wrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  background: transparent;   /* ここだけ透明に（任意） */
+  overflow: hidden;
+}
+
+
+.popup-image-wrapper img {
+  width: 80%;
+  height: 80%;
+  object-fit: cover;
+  display: block;
+  border-radius: 0; /* 既存の丸みがあれば打ち消し */
+}
+
+/* 「マップに飛ぶ」を画像ボタンに。既存の青ボタン風をオフ */
+.popup-actions {
+  margin-top: 12px;
+  display: flex;
+  justify-content: center;
+}
+
+/* 「マップに飛ぶ」リンクの見た目（ボタン風） */
+.map-link {
+  background: none !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  text-decoration: none;
+  transform: none !important;
+}
+.map-link:hover,
+.map-link:active { opacity: 1; transform: none; }
+
+/* 画像サイズはここで管理 */
+.map-link img {
+  display: block;
+  width: 150px;      /* 好みで調整OK */
+  height: auto;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.25));
+}
+
+/* 既存 .popup img { width:150px; height:150px; } の影響を打ち消したい場合の保険 */
+.popup > img { width: auto; height: auto; }
+
+.help-viewer.qr-second {
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  background: url("/image/background_popup.png") no-repeat center;
+  background-size: contain;
+  border-radius: 16px;
+  padding: 20px;
+  box-sizing: border-box;
+  width: 90vw;
+  max-width: 480px;
+  height: 80vh;
+  max-height: 622px;
+  position: relative;
+  overflow: visible;   /* ← ★ ここを変更 */
+}
+
+/* QR2枚目のスクロール領域（画像＋テキストのみスクロール） */
+.qr-second-content {
+  width: 100%;
+  height: calc(100% - 100px); /* 閉じるボタン分を除いた高さ */
+  overflow-y: auto;           /* ← ★ ここでスクロール */
+  padding: 0 10px 20px;
+  box-sizing: border-box;
+}
+
+/* QR2枚目専用の画像サイズ */
+.help-viewer.qr-second .help-image {
+  width: 75% !important;
+  height: auto !important;
+  max-height: 30vh !important;
+  margin: 20px auto 20px !important;  /* ← 下マージンを30pxに変更 */
+  display: block;
+  object-fit: contain;
+}
+
+/* QR2枚目専用のテキスト */
+.help-viewer.qr-second .qr-text {
+  width: 76% !important;
+  font-size: 14.5px !important;
+  line-height: 1.4 !important;
+  margin: 0 auto 15px !important;
+  text-align: center;
+  word-break: break-word;
+  color: #000;
+}
+
+
+/* QR2枚目専用の閉じるボタン（常に下固定） */
+.help-viewer.qr-second .help-close {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  z-index: 1001;
+}
+
+.help-viewer.qr-second .help-close img {
+  width: 100px;
+  height: auto;
+  display: block;
+}

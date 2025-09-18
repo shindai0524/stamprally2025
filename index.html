@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>スタンプラリー注意事項</title>
+    <style>
+        /* 全体のスタイル */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            /* ★ご指定のベースカラーに変更 */
+            background-color: #FBEBBA; 
+        }
+        
+        /* コンテンツコンテナ */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* 見出し */
+        h1 {
+            /* ★アクセントカラーを変更 */
+            color: #A95A68;
+            border-bottom: 2px solid #A95A68;
+            padding-bottom: 10px;
+            text-align: center;
+        }
+
+        h2 {
+            /* ★アクセントカラーを変更 */
+            color: #A95A68;
+            font-size: 1.5em;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+
+        /* リスト */
+        ul {
+            list-style-type: '◎ ';
+            padding-left: 20px;
+            margin: 0;
+        }
+        
+        li {
+            margin-bottom: 15px;
+            padding-left: 5px;
+        }
+        
+        .note {
+            font-size: 0.9em;
+            color: #777;
+            margin-top: 20px;
+            border-top: 1px solid #ddd;
+            padding-top: 15px;
+        }
+
+        /* 同意セクション */
+        .agreement-section {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 30px;
+            flex-direction: column;
+        }
+        
+        .agreement-section label {
+            cursor: pointer;
+            font-size: 1em;
+            margin-bottom: 15px;
+        }
+
+        .agreement-section input[type="checkbox"] {
+            margin-right: 8px;
+        }
+
+        /* ボタンのスタイル */
+        #start-button {
+            display: block;
+            width: 100%;
+            max-width: 300px;
+            padding: 12px 24px;
+            font-size: 1.1em;
+            color: #fff;
+            /* ★アクセントカラーに変更 */
+            background-color: #A95A68;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, opacity 0.3s;
+        }
+        
+        /* 無効状態のボタン */
+        #start-button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        /* ホバー時のボタン */
+        #start-button:not(:disabled):hover {
+            /* ★アクセントカラーの少し暗い色に変更 */
+            background-color: #8a4855;
+        }
+        
+        /* スマートフォン向けレスポンシブ対応 */
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+            
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 1.8em;
+            }
+            
+            h2 {
+                font-size: 1.3em;
+            }
+            
+            li {
+                margin-bottom: 10px;
+            }
+            
+            .agreement-section label {
+                font-size: 0.9em;
+            }
+            
+            #start-button {
+                padding: 10px 20px;
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>スタンプラリーの参加にあたっての注意事項</h1>
+
+    <section>
+        <h2>スタンプラリーの参加にあたって</h2>
+        <ul>
+            <li>参加は無料ですが、通信料はご利用者様負担となります。</li>
+            <li>歩きスマホは大変危険です。画面を見るときは周りの方の迷惑にならない安全な場所に立ち止まってください。</li>
+            <li>ケガなどにつきましては参加者各自の責任において対処をお願いします。</li>
+            <li>ゴミは各自でお持ち帰りください。</li>
+            <li>私有地や建物など許可なく立ち入ってはいけない場所には入らないでください。</li>
+            <li>スタンプポイントの営業時間などをご確認の上、おでかけください。</li>
+            <li>スタンプ取得においては、施設や店舗、他のお客さまのご迷惑にならないようにご配慮ください。</li>
+            <li>参加登録及びプレゼント応募でご入力いただいた個人情報はスタンプラリーの運用(プレゼント当選者へ賞品発送のため配送伝票への記載、 スタンプラリー開催期間中のお知らせ配信を含む)にのみ使用するものとします。主催者及び事務局以外の第三者への提供は行いません。(法令等により開示を求められた場合を除く)</li>
+            <li>入館料などを必要とする施設では、入館料を支払の上、イベントに参加してください。</li>
+        </ul>
+    </section>
+
+    <section>
+        <h2>その他</h2>
+        <ul class="note">
+            <li>イベントは予告なく変更・中止する場合がございます。また、当サイトに掲載されているコンテンツや情報は、予告なく変更・修正・削除する場合があります。</li>
+            <li>QRコードは(株)デンソーウェーブの登録商標です。</li>
+        </ul>
+    </section>
+
+    <div class="agreement-section">
+        <div>
+            <input type="checkbox" id="agree">
+            <label for="agree">注意事項に同意する</label>
+        </div>
+        <button id="start-button" disabled>スタンプラリーを開始する</button>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // ★★★ 変更点 1: 初回アクセスかどうかの判定 ★★★
+        // ローカルストレージに 'hasAgreed' というキーで同意情報が保存されているか確認
+        if (localStorage.getItem('hasAgreed') === 'true') {
+            // 同意済みの場合は、注意事項ページをスキップして直接login.htmlに移動
+            window.location.href = 'login.html';
+            return; // これ以降の処理は行わない
+        }
+
+        const agreeCheckbox = document.getElementById('agree');
+        const startButton = document.getElementById('start-button');
+        
+        agreeCheckbox.addEventListener('change', function() {
+            if (this.checked) {
+                startButton.disabled = false;
+            } else {
+                startButton.disabled = true;
+            }
+        });
+
+        startButton.addEventListener('click', function() {
+            if (!this.disabled) {
+                // ★★★ 変更点 2: 同意情報を保存してページを遷移 ★★★
+                // 「スタンプラリーを開始する」ボタンが押されたら…
+                
+                // 1. ローカルストレージに同意したことを記録
+                localStorage.setItem('hasAgreed', 'true');
+                
+                // 2. start.htmlに移動
+                window.location.href = 'start.html';
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

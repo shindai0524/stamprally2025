@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>マップ</title>
+  <link rel="stylesheet" href="map.css">
+</head>
+<body>
+  <div id="loading-overlay">
+    <div class="loading-container">
+      <div class="progress-bar-container">
+        <div class="progress-bar"></div>
+      </div>
+      <div class="progress-text">マップを読み込んでいます...</div>
+    </div>
+  </div>
+
+  <div class="floating-logo">
+    <img src="image/logo.png" alt="アイヌ×奥まちデジタルスタンプラリー ロゴ">
+  </div>
+
+  <div id="map"></div>
+
+  <button class="hamburger-btn" id="hamburgerBtn" aria-label="メニューを開く"></button>
+
+  <div class="menu-overlay" id="menuOverlay"></div>
+  <div class="side-menu" id="sideMenu">
+    <div class="side-menu-header">
+      <h3></h3>
+      <button class="close-btn" id="closeMenuBtn">　</button>
+    </div>
+    <ul class="side-menu-nav">
+      <li><button id="menuOpenSearchBtn" aria-label="スポットを探す"></button></li>
+      <li><button id="menuOpenFilterBtn" aria-label="コースを選択"></button></li>
+      <li><button id="menuTutorialBtn" aria-label="マップの操作方法"></button></li>
+    </ul>
+  </div>
+
+  <div class="modal-overlay" id="modalOverlay"></div>
+
+<div class="modal-panel" id="filterModal">
+  <button class="close-btn"></button>
+  
+  <div class="modal-content">
+    <img src="image/course_select.png" alt="コースを選択" class="modal-title-image">
+    
+    <div class="filter-buttons">
+      <button class="filter-button all-courses active" data-course="all" aria-label="すべてのコース"></button>
+      <button class="filter-button enma-course" data-course="登別閻魔やきそばコース" aria-label="登別閻魔やきそばコース"></button>
+      <button class="filter-button brand-course" data-course="登別ブランド推奨品コース" aria-label="登別ブランド推奨品コース"></button>
+      <button class="filter-button ainu-course" data-course="アイヌ文化施設・史跡コース" aria-label="アイヌ文化施設・史跡コース"></button>
+    </div>
+  </div>
+</div>
+
+  <div class="modal-panel" id="tutorialModal">
+    <button class="close-btn"></button>
+      <img src="image/map_operation.png" alt="マップの操作方法">
+  </div>
+
+  <div class="modal-panel" id="searchListModal">
+    <button class="close-btn"></button>
+    <div class="modal-title"></div>
+    <div class="list-tabs">
+      <button class="list-tab active" data-course-filter="all">全て</button>
+      <button class="list-tab" data-course-filter="nearby">近距離</button>
+      <button class="list-tab" data-course-filter="登別閻魔やきそばコース">登別閻魔やきそばコース</button>
+      <button class="list-tab" data-course-filter="登別ブランド推奨品コース">登別ブランド推奨品コース</button>
+      <button class="list-tab" data-course-filter="アイヌ文化施設・史跡コース">アイヌ文化・史跡コース</button>
+    </div>
+    <div class="search-input-wrapper">
+      <input type="text" id="searchInput" class="search-input" placeholder="スポット名で検索...">
+    </div>
+    <ul class="spot-list" id="spotList"></ul>
+  </div>
+
+  <button class="fab-button bottom-right reset-view-btn" id="resetViewBtn" aria-label="初期表示に戻す"></button>
+  <button class="fab-button bottom-right" id="currentLocationBtn" aria-label="現在地に戻る"></button>
+  <button class="fab-button" id="homeBtn" aria-label="ホームに戻る"></button>
+
+  <div id="courseNotification" class="course-notification"></div>
+
+  <script>
+    // ### グローバル変数定義 ###
+    let map, markerCluster, currentLocationMarker = null, openInfoWindow = null;
+    let allMarkers = [], activeFilter = 'all', notificationTimeout;
+    let userLocation = null, locations = [];
+    let markersById = {};
+
+    const INITIAL_VIEW = {
+      center: { lat: 42.409441, lng: 141.1069605 },
+      zoom: 13
+    };
+
+    /**
+     * マップの初期化プロセスを開始するメイン関数
+     */
+    async function initMap() {
+      const loadingOverlay = document.getElementById('loading-overlay');
+      const progressBar = document.querySelector('.progress-bar');
+      const progressText = document.querySelector('.progress-text');
+
+      try {
+        // 1. スポットデータを外部ファイルから非同期で取得
+        locations = await fetchLocationsData();
+        
+        // 2. DOM要素の取得とマップの基本設定
+        const dom = getDOMElements();
+        initializeGoogleMap(dom.map);
+        
+        // 3. UIイベントリスナーの設定
+        setupEventListeners(dom);
+
+        // 4. 取得済みスタンプ情報と重複座標の処理
+        const acquiredStampIds = loadAcquiredStamps();
+        const adjustedLocations = adjustDuplicateCoordinates(locations);
+
+        // 5. マーカーを段階的に生成し、プログレスバーを更新
+        allMarkers = await processMarkersIncrementally(adjustedLocations, acquiredStampIds, (progress) => {
+            progressBar.style.width = progress + '%';
+            progressText.textContent = `マップを読み込んでいます... ${Math.round(progress)}%`;
+        });
+
+        // 6. マップの最終設定
+        finalizeMapSetup();
+
+      } catch (error) {
+        console.error("マップの初期化中にエラーが発生しました:", error);
+        progressText.textContent = 'マップの読み込みに失敗しました。';
+        // ここでユーザーにエラーメッセージを表示するUIを追加することも可能
+      } finally {
+        // 7. ローディング画面を非表示にする
+        loadingOverlay.classList.add('hidden');
+        setTimeout(() => { loadingOverlay.style.display = 'none'; }, 500);
+      }
+    }
+    
+    /**
+     * locations.jsonからスポットデータを取得
+     * @returns {Promise<Array>} スポットデータの配列
+     */
+    async function fetchLocationsData() {
+      const response = await fetch('locations.json');
+      if (!response.ok) {
+        throw new Error(`スポットデータの読み込みに失敗しました: ${response.statusText}`);
+      }
+      return await response.json();
+    }
+    
+    /**
+     * ページ内の主要なDOM要素を取得
+     * @returns {Object} DOM要素のオブジェクト
+     */
+    function getDOMElements() {
+        return { 
+            map: document.getElementById('map'), 
+            hamburgerBtn: document.getElementById('hamburgerBtn'), 
+            sideMenu: document.getElementById('sideMenu'), 
+            menuOverlay: document.getElementById('menuOverlay'), 
+            modalOverlay: document.getElementById('modalOverlay'), 
+            filterModal: document.getElementById('filterModal'), 
+            tutorialModal: document.getElementById('tutorialModal'), 
+            searchListModal: document.getElementById('searchListModal'), 
+            searchInput: document.getElementById('searchInput'), 
+            spotList: document.getElementById('spotList'), 
+        };
+    }
+
+    /**
+     * Google Mapインスタンスを初期化
+     * @param {HTMLElement} mapElement マップを描画するDOM要素
+     */
+    function initializeGoogleMap(mapElement) {
+        const mapStyles = [ { featureType: "poi", stylers: [{ visibility: "off" }] }, { featureType: "transit", stylers: [{ visibility: "off" }] }, { featureType: "road", elementType: "labels.icon", stylers: [{ visibility: "off" }] } ];
+        map = new google.maps.Map(mapElement, {
+            center: INITIAL_VIEW.center, zoom: INITIAL_VIEW.zoom, maxZoom: 20, minZoom: 10, disableDefaultUI: true, gestureHandling: 'greedy',
+            restriction: { latLngBounds: { north: 43.0, south: 42.0, west: 140.8646, east: 141.328 }, strictBounds: true, },
+            styles: mapStyles
+        });
+    }
+    
+    /**
+     * localStorageから取得済みスタンプIDの配列を読み込む
+     * @returns {Array<number>} 取得済みスタンプIDの配列
+     */
+    function loadAcquiredStamps() {
+        try {
+            const storedData = localStorage.getItem('obtainedStamps');
+            if (storedData) {
+                const stampData = JSON.parse(storedData);
+                return Object.keys(stampData)
+                    .map(key => parseInt(key.replace('stamp', ''), 10))
+                    .filter(id => !isNaN(id));
+            }
+        } catch (e) {
+            console.error("スタンプデータの読み込みに失敗しました:", e);
+        }
+        return [];
+    }
+
+    /**
+     * 同じ座標に複数のスポットがある場合、少しずらして表示する
+     * @param {Array} originalLocations 元のスポットデータ配列
+     * @returns {Array} 座標調整後のスポットデータ配列
+     */
+    function adjustDuplicateCoordinates(originalLocations) {
+        const locationsCopy = JSON.parse(JSON.stringify(originalLocations));
+        const coordsMap = {};
+        locationsCopy.forEach((loc, index) => {
+            const key = `${loc.lat.toFixed(6)},${loc.lng.toFixed(6)}`;
+            if (!coordsMap[key]) {
+                coordsMap[key] = { indices: [], originalLat: loc.lat, originalLng: loc.lng };
+            }
+            coordsMap[key].indices.push(index);
+        });
+
+        const offset = 0.00007;
+        Object.values(coordsMap).forEach(group => {
+            if (group.indices.length > 1) {
+                const count = group.indices.length;
+                const angleStep = (2 * Math.PI) / count;
+                group.indices.forEach((locIndex, i) => {
+                    const angle = angleStep * i;
+                    locationsCopy[locIndex].lat = group.originalLat + offset * Math.cos(angle);
+                    locationsCopy[locIndex].lng = group.originalLng + offset * Math.sin(angle);
+                });
+            }
+        });
+        return locationsCopy;
+    }
+
+    /**
+     * マーカーをチャンクに分けて段階的に生成する
+     * @param {Array} locationsToProcess スポットデータ
+     * @param {Array<number>} acquiredStampIds 取得済みスタンプID
+     * @param {Function} onProgress プログレスコールバック
+     * @returns {Promise<Array>} 生成されたマーカーの配列
+     */
+    function processMarkersIncrementally(locationsToProcess, acquiredStampIds, onProgress) {
+      return new Promise(resolve => {
+        let markers = [];
+        let index = 0;
+        const chunkSize = 5;
+
+        function processChunk() {
+          const endIndex = Math.min(index + chunkSize, locationsToProcess.length);
+          for (let i = index; i < endIndex; i++) {
+            markers.push(createMarker(locationsToProcess[i], acquiredStampIds));
+          }
+          
+          const progress = (endIndex / locationsToProcess.length) * 100;
+          if (onProgress) onProgress(progress);
+
+          index = endIndex;
+          if (index < locationsToProcess.length) {
+            setTimeout(processChunk, 0);
+          } else {
+            resolve(markers);
+          }
+        }
+        processChunk();
+      });
+    }
+
+    /**
+     * マップの最終設定と表示処理
+     */
+    function finalizeMapSetup() {
+        activeFilter = 'all';
+        const currentActiveBtn = document.querySelector('.filter-button.active');
+        if (currentActiveBtn) currentActiveBtn.classList.remove('active');
+        document.querySelector('.filter-button[data-course="all"]')?.classList.add('active');
+        
+        updateMarkerDisplay();
+
+        const params = new URLSearchParams(window.location.search);
+        const spotId = parseInt(params.get("spotId"), 10);
+        if (spotId && markersById[spotId]) {
+            const marker = markersById[spotId];
+            map.setCenter(marker.getPosition());
+            map.setZoom(17);
+            if (openInfoWindow) openInfoWindow.close();
+            marker._infoWindow.open(map, marker);
+            openInfoWindow = marker._infoWindow;
+        }
+
+        if (localStorage.getItem('noboribetsuMapVisited') !== 'true') {
+            setTimeout(() => {
+                const tutorialModal = document.getElementById('tutorialModal');
+                if (tutorialModal) openModal(tutorialModal);
+                localStorage.setItem('noboribetsuMapVisited', 'true');
+            }, 1000);
+        }
+        
+        startWatchingLocation();
+    }
+
+    // ### UI操作とイベントリスナー ###
+
+    let toggleSideMenu, closeAllModals, openModal; // スコープを広く保つ
+
+    function setupEventListeners(dom) {
+      toggleSideMenu = () => { dom.sideMenu.classList.toggle('open'); dom.menuOverlay.classList.toggle('show'); dom.hamburgerBtn.classList.toggle('is-active'); };
+      closeAllModals = () => { document.querySelectorAll('.modal-panel.show').forEach(m => m.classList.remove('show')); dom.modalOverlay.classList.remove('show'); };
+      openModal = (modal) => {
+        if (dom.sideMenu.classList.contains('open')) toggleSideMenu();
+        if (openInfoWindow) { openInfoWindow.close(); openInfoWindow = null; }
+        setTimeout(() => { modal.classList.add('show'); dom.modalOverlay.classList.add('show'); }, 250);
+      };
+
+      dom.hamburgerBtn.addEventListener('click', () => { if (!dom.sideMenu.classList.contains('open')) { closeAllModals(); if (openInfoWindow) { openInfoWindow.close(); openInfoWindow = null; } } toggleSideMenu(); });
+      document.getElementById('closeMenuBtn').addEventListener('click', toggleSideMenu);
+      dom.menuOverlay.addEventListener('click', toggleSideMenu);
+      document.querySelectorAll('.close-btn').forEach(btn => btn.addEventListener('click', closeAllModals));
+      dom.modalOverlay.addEventListener('click', closeAllModals);
+      document.getElementById('menuOpenFilterBtn').addEventListener('click', () => openModal(dom.filterModal));
+      document.getElementById('menuTutorialBtn').addEventListener('click', () => openModal(dom.tutorialModal));
+      document.getElementById('menuOpenSearchBtn').addEventListener('click', () => { document.getElementById('searchInput').value = ''; updateSpotList(''); openModal(dom.searchListModal); });
+      map.addListener('click', () => { if (openInfoWindow) { openInfoWindow.close(); openInfoWindow = null; } });
+      map.addListener('dragstart', () => { if (openInfoWindow) { openInfoWindow.close(); openInfoWindow = null; } });
+      document.getElementById('currentLocationBtn').addEventListener('click', () => { if (currentLocationMarker?.getMap()) { map.panTo(currentLocationMarker.getPosition()); animatedZoom(16); } else { alert('現在地が取得できていません。ブラウザの位置情報設定を確認し、許可してください。'); } });
+      document.getElementById('resetViewBtn').addEventListener('click', () => { map.panTo(INITIAL_VIEW.center); animatedZoom(INITIAL_VIEW.zoom); });
+      document.getElementById('homeBtn').addEventListener('click', () => { window.location.href = 'home.php'; });
+      document.querySelectorAll('.filter-button').forEach(button => { button.addEventListener('click', () => { activeFilter = button.dataset.course; document.querySelector('.filter-button.active').classList.remove('active'); button.classList.add('active'); showCourseNotification(button); updateMarkerDisplay(); setTimeout(closeAllModals, 250); }); });
+      dom.searchInput.addEventListener('input', (e) => updateSpotList(e.target.value));
+      document.querySelectorAll('.list-tab').forEach(tab => { tab.addEventListener('click', () => { document.querySelector('.list-tab.active').classList.remove('active'); tab.classList.add('active'); dom.searchInput.value = ''; updateSpotList(''); }); });
+      dom.spotList.addEventListener('click', (e) => {
+        const listItem = e.target.closest('.spot-list-item');
+        if (listItem) {
+          const marker = allMarkers[listItem.dataset.index];
+          if (marker) {
+            map.setCenter(marker.getPosition());
+            map.setZoom(17);
+            google.maps.event.trigger(marker, 'click');
+            // マーカーをバウンドさせるアニメーション
+            marker.setAnimation(google.maps.Animation.BOUNCE);
+            setTimeout(() => marker.setAnimation(null), 1400); // 2回バウンド(約700ms * 2)
+            closeAllModals();
+          }
+        }
+      });
+    }
+
+    function showCourseNotification(buttonEl) {
+      const notificationEl = document.getElementById('courseNotification');
+      if (!notificationEl || !buttonEl) return;
+      notificationEl.textContent = `${buttonEl.getAttribute('aria-label')} を表示中`;
+      notificationEl.classList.add('show');
+      clearTimeout(notificationTimeout);
+      notificationTimeout = setTimeout(() => { notificationEl.classList.remove('show'); }, 3000);
+    }
+
+    function startWatchingLocation() {
+      if (!navigator.geolocation) { console.warn("位置情報APIが利用できません。"); return; }
+      navigator.geolocation.watchPosition(
+        (position) => {
+          userLocation = { lat: position.coords.latitude, lng: position.coords.longitude };
+          const bounds = map.getRestriction().latLngBounds;
+          if (bounds?.contains(userLocation)) {
+            if (!currentLocationMarker) {
+              currentLocationMarker = new google.maps.Marker({ position: userLocation, map: map, title: '現在地', icon: { path: google.maps.SymbolPath.CIRCLE, scale: 9, fillColor: '#4285F4', fillOpacity: 1, strokeColor: '#ffffff', strokeWeight: 3 }, zIndex: 1000000, });
+            } else { currentLocationMarker.setPosition(userLocation); }
+          }
+        },
+        (error) => { console.warn(`位置情報の取得エラー: ${error.message}`); },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
+      );
+    }
+    
+    function animatedZoom(targetZoom) {
+      let currentZoom = map.getZoom();
+      const step = targetZoom > currentZoom ? 1 : -1;
+      const zoomInterval = setInterval(() => {
+        currentZoom += step;
+        if ((step > 0 && currentZoom >= targetZoom) || (step < 0 && currentZoom <= targetZoom)) {
+          map.setZoom(targetZoom);
+          clearInterval(zoomInterval);
+        } else { map.setZoom(currentZoom); }
+      }, 80);
+    }
+
+    function updateMarkerDisplay() {
+      if (markerCluster) markerCluster.clearMarkers();
+      const filteredMarkers = allMarkers.filter(marker => activeFilter === 'all' || marker.course === activeFilter);
+      markerCluster = new markerClusterer.MarkerClusterer({
+        map,
+        markers: filteredMarkers,
+        algorithm: new markerClusterer.SuperClusterAlgorithm({ radius: 60, maxZoom: 16 }),
+        renderer: clusterRenderer,
+        onClusterClick: (event, cluster, map) => { if (openInfoWindow) { openInfoWindow.close(); openInfoWindow = null; } map.panTo(cluster.position); animatedZoom(map.getZoom() + 2); },
+      });
+    }
+
+    function createMarker(location, acquiredStampIds) {
+      const isAcquired = acquiredStampIds.includes(location.id);
+      const markerSize = 70; 
+      let iconUrl;
+      switch (location.course) {
+        case "登別閻魔やきそばコース": iconUrl = "image/stamp_yakisoba.png"; break;
+        case "登別ブランド推奨品コース": iconUrl = "image/stamp_brand.png"; break;
+        case "アイヌ文化施設・史跡コース": iconUrl = "image/stamp_ainu.png"; break;
+      }
+      const marker = new google.maps.Marker({
+        position: { lat: location.lat, lng: location.lng }, title: location.spot,
+        icon: { url: iconUrl, scaledSize: new google.maps.Size(markerSize, markerSize), anchor: new google.maps.Point(markerSize / 2, markerSize / 2), },
+        course: location.course, opacity: isAcquired ? 1.0 : 0.4
+      });
+      const infoWindow = new google.maps.InfoWindow({ content: createInfoWindowContent(location, isAcquired), zIndex: 1001 });
+      if (isAcquired) { createAcquiredIcon(iconUrl, (acquiredIconUrl) => { marker.setIcon({ url: acquiredIconUrl, scaledSize: new google.maps.Size(markerSize, markerSize), anchor: new google.maps.Point(markerSize / 2, markerSize / 2), }); }); }
+      marker._infoWindow = infoWindow;
+      marker._locationId = location.id;
+      markersById[location.id] = marker;
+      marker.addListener('click', () => { document.querySelectorAll('.modal-panel.show').forEach(m => m.classList.remove('show')); document.getElementById('modalOverlay')?.classList.remove('show'); if (document.getElementById('sideMenu').classList.contains('open')) { document.getElementById('hamburgerBtn').click(); } if (openInfoWindow) openInfoWindow.close(); infoWindow.open(map, marker); openInfoWindow = infoWindow; });
+      return marker;
+    }
+
+    function createInfoWindowContent(location, isAcquired) {
+      const courseColorVar = getCourseColor(location.course);
+      const courseColor = getComputedStyle(document.documentElement).getPropertyValue(courseColorVar.match(/--([a-z-]+)/)[0]).trim();
+      const getRibbonHtml = isAcquired ? `<div class="stamp-get-ribbon">GET!</div>` : '';
+      const imageHtml = location.imageUrl ? `<img src="${location.imageUrl}" alt="${location.spot}" class="info-window-image" loading="lazy">` : '';
+      const descriptionHtml = location.description ? `<p>${location.description.replace(/\n/g, '<br>')}</p>` : '';
+      const detailsLinkHtml = location.url ? `<a href="${location.url}" target="_blank" rel="noopener" class="info-link"><svg viewBox="0 0 24 24"><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"></path></svg><span>詳細</span></a>` : '';
+      const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${location.lat},${location.lng}`;
+      const directionsLinkHtml = `<a href="${directionsUrl}" target="_blank" rel="noopener" class="info-link"><svg viewBox="0 0 24 24"><path d="M22.43 10.59l-9.01-9.01c-.75-.75-2.07-.75-2.83 0l-9.01 9.01c-.75.75-.75 2.07 0 2.83l9.01 9.01c.75.75 2.07.75 2.83 0l9.01-9.01c.76-.75.76-2.07.01-2.83zM12 20.25L3.75 12 12 3.75 20.25 12 12 20.25zM11.5 11V8h2v3h3v2h-3v3h-2v-3H8v-2h3.5z"></path></svg><span>経路</span></a>`;
+      const container = document.createElement('div');
+      container.className = 'info-window-container';
+      container.style.setProperty('--info-bg', courseColor);
+      container.innerHTML = `${getRibbonHtml}<div class="info-window-header">${location.course}</div>${imageHtml}<div class="info-window-body"><h3>${location.spot}</h3>${descriptionHtml}</div><div class="info-window-actions">${detailsLinkHtml}${directionsLinkHtml}</div>`;
+      return container;
+    }
+
+    function createAcquiredIcon(baseIconUrl, callback) {
+      const canvas = document.createElement('canvas'); const ctx = canvas.getContext('2d'); const image = new Image(); image.crossOrigin = 'Anonymous'; image.src = baseIconUrl;
+      image.onload = () => { const size = 70; const dpr = window.devicePixelRatio || 1; canvas.width = size * dpr; canvas.height = size * dpr; ctx.scale(dpr, dpr); ctx.drawImage(image, 0, 0, size, size); const text = 'GET!'; ctx.font = 'bold 22px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'bottom'; ctx.shadowColor = 'rgba(0, 0, 0, 0.8)'; ctx.shadowBlur = 3; ctx.shadowOffsetY = 2; ctx.strokeStyle = 'white'; ctx.lineWidth = 4; ctx.fillStyle = '#ff4500'; const x = size / 2; const y = size - 3; ctx.strokeText(text, x, y); ctx.fillText(text, x, y); callback(canvas.toDataURL('image/png')); };
+      image.onerror = () => { console.error('ベースアイコンの読み込みに失敗しました:', baseIconUrl); };
+    }
+
+    const clusterRenderer = {
+      render: ({ count, position }) => {
+        const size = count < 10 ? 45 : count < 25 ? 55 : 65; const fontSize = count < 10 ? 14 : count < 25 ? 16 : 18;
+        const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}"><defs><filter id="cluster-shadow" x="-50%" y="-50%" width="200%" height="200%"><feDropShadow dx="0" dy="1" stdDeviation="2" flood-color="rgba(0,0,0,0.3)"/></filter></defs><g filter="url(#cluster-shadow)"><circle cx="${size/2}" cy="${size/2}" r="${size/2-3}" fill="#A95A68" stroke="rgba(255,255,255,0.8)" stroke-width="4" /><text x="50%" y="50%" dominant-baseline="central" text-anchor="middle" font-family="Arial, sans-serif" font-size="${fontSize}px" font-weight="bold" fill="white">${count}</text></g></svg>`;
+        return new google.maps.Marker({ position, icon: { url: 'data:image/svg+xml;base64,' + btoa(svg), scaledSize: new google.maps.Size(size, size), anchor: new google.maps.Point(size/2, size/2) }, zIndex: 999, });
+      }
+    };
+
+    function katakanaToHiragana(str) { return str.replace(/[\u30a1-\u30f6]/g, match => String.fromCharCode(match.charCodeAt(0) - 0x60)); }
+    function calculateDistance(lat1, lon1, lat2, lon2) {
+      const R = 6371e3; const φ1 = lat1 * Math.PI / 180; const φ2 = lat2 * Math.PI / 180; const Δφ = (lat2 - lat1) * Math.PI / 180; const Δλ = (lon2 - lon1) * Math.PI / 180;
+      const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) + Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)); return R * c;
+    }
+
+    function updateSpotList(searchTerm = '') {
+      const spotListEl = document.getElementById('spotList'); const searchInputEl = document.getElementById('searchInput'); const activeTab = document.querySelector('.list-tab.active');
+      if (searchTerm) searchInputEl.value = searchTerm;
+      const currentCourseFilter = activeTab.dataset.courseFilter; const normalizedSearchTerm = katakanaToHiragana(searchTerm.toLowerCase()); let filteredLocations = []; let hasDistance = false;
+      if (currentCourseFilter === 'nearby') {
+        if (!userLocation) { spotListEl.innerHTML = '<li class="spot-list-item" style="text-align:center; color:#888;">現在地が取得できませんでした。位置情報の設定を確認してください。</li>'; return; }
+        hasDistance = true;
+        filteredLocations = locations.map((loc, index) => ({ ...loc, originalIndex: index, distance: calculateDistance(userLocation.lat, userLocation.lng, loc.lat, loc.lng) }))
+          .filter(loc => loc.distance <= 6000 && (katakanaToHiragana(loc.spot.toLowerCase()).includes(normalizedSearchTerm) || katakanaToHiragana(loc.reading.toLowerCase()).includes(normalizedSearchTerm)))
+          .sort((a, b) => a.distance - b.distance);
+      } else {
+        filteredLocations = locations.map((loc, index) => ({...loc, originalIndex: index}))
+          .filter(loc => (currentCourseFilter === 'all' || loc.course === currentCourseFilter) && (katakanaToHiragana(loc.spot.toLowerCase()).includes(normalizedSearchTerm) || katakanaToHiragana(loc.reading.toLowerCase()).includes(normalizedSearchTerm)));
+      }
+      if (filteredLocations.length === 0) { spotListEl.innerHTML = '<li class="spot-list-item" style="text-align:center; color:#888;">該当するスポットはありません。</li>'; return; }
+      spotListEl.innerHTML = filteredLocations.map(location => {
+          let distanceHtml = '';
+          if (hasDistance && location.distance !== undefined) { const distanceKm = location.distance / 1000; distanceHtml = `<span class="spot-distance-tag">直線距離 ${distanceKm < 1 ? Math.round(location.distance) + ' m' : distanceKm.toFixed(1) + ' km'}</span>`; }
+          return `<li class="spot-list-item" data-index="${location.originalIndex}"><div class="item-name">${location.spot}${distanceHtml}</div><div class="item-course">${location.course}</div></li>`; 
+      }).join('');
+    }
+
+    function getCourseColor(course) { const colors = { "登別閻魔やきそばコース": "var(--color-enma-bg)", "登別ブランド推奨品コース": "var(--color-brand-bg)", "アイヌ文化施設・史跡コース": "var(--color-ainu-bg)" }; return colors[course] || "var(--color-all-bg)"; }
+    window.gm_authFailure = () => { alert('Google Maps APIの認証に失敗しました。APIキーを確認してください。'); };
+  </script>
+  <script src="https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC627CoD9oEidIKSd5E-t7PDpVWeHOBrvY&callback=initMap&libraries=marker" async defer></script>
+</body>
+</html>

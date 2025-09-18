@@ -1,0 +1,106 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+  background-image: url('/image/background.png');
+  background-size: cover;
+  background-position: center;
+  text-align: center;
+}
+
+.complete-container {
+  padding: 80px 20px;
+}
+
+.complete-message {
+  font-size: 1.4em;
+  font-weight: bold;
+  background: rgba(255, 255, 255, 0.8);
+  padding: 30px;
+  border-radius: 12px;
+  display: inline-block;
+}
+
+.back-button {
+  margin-top: 40px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.back-button img {
+  width: 100px;
+  height: auto;
+}
+
+/* --- 参加賞応募後アンケートのポップアップ用スタイル --- */
+
+#popup-overlay {
+    position: fixed; /* 画面に固定する */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6); /* 半透明の黒 */
+    display: flex;
+    align-items: center;    /* 上下中央揃え */
+    justify-content: center; /* 左右中央揃え */
+    z-index: 1000;
+
+    align-items: flex-start;  /* 上下中央揃え → 上揃えに変更 */
+    overflow-y: auto;       /* 縦方向に長い場合にスクロールバーを表示 */
+    padding: 40px 0;        /* 上下にスクロール時の余白を追加 */
+    box-sizing: border-box; /* paddingを含めて高さを100%に収める */
+}
+
+#popup-window {
+    background-image: url('/image/background.png'); 
+    background-size: cover; /* 画像を引き伸ばしてエリアを覆う */
+    padding: 15px 30px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    width: 90%;
+    max-width: 450px;
+    color: #333; /* 文字色を黒に */
+    text-align: left; /* 文字を左揃えに */
+
+    margin-bottom: 40px;
+}
+
+#popup-window h3 {
+    margin-top: 0;
+    text-align: center;
+}
+
+#popup-window .question {
+    margin-bottom: 15px;
+}
+
+#popup-window .question p {
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+#popup-window .question label {
+    margin-left: 5px;
+    cursor: pointer;
+}
+
+#popup-window .buttons {
+    text-align: center;
+    margin-top: 15px;
+}
+
+#popup-window button[type="submit"] {
+    background-color: #594F3D; /* 緑色 */
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.hidden {
+    display: none !important;
+}

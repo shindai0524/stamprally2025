@@ -1,0 +1,118 @@
+/* 端末幅からはみ出さない基本 */
+* { box-sizing: border-box; }
+html, body { max-width: 100%; overflow-x: hidden; }
+
+body {
+  font-family: sans-serif;
+  margin: 0;
+  padding: 180px 15px 20px; /* ヘッダー分の余白 + 横の余白 */
+  background-color: #f4f4f4;
+  background-image: url('/image/backgroundlonglong.png');
+  background-repeat: repeat;
+  background-size: 100% auto;
+  background-position: bottom center;
+  min-height: 100vh;
+}
+
+/* 上部の固定背景帯 */
+.top-background {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%;
+  height: 155px;
+  background-image: url('/image/backgroundheader.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center top;
+  z-index: 90;
+}
+
+/* 上に重ねる画像（タイトル等） */
+.header-image {
+  position: fixed;
+  top: 0; left: 0;
+  width: 95%;
+  height: 155px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+  pointer-events: none;
+}
+
+.header-image img {
+  max-width: 60%;
+  height: auto;
+  object-fit: contain;
+}
+
+/* 戻るボタン */
+#backButton {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  width: 60px;
+  height: 60px;
+  background: url('/image/back.png') no-repeat center/contain;
+  border: none;
+  z-index: 110;
+  cursor: pointer;
+}
+
+/* ====== 景品カード ====== */
+.prize-card {
+  position: relative;
+  overflow: visible;
+  background-image: url('/image/prize_background.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  padding: 15px;
+  margin: 60px 0 20px;
+  border-radius: 15px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+/* オーバーレイ画像 */
+.prize-overlay {
+  position: absolute;
+  top: -25px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 5;
+  pointer-events: none;
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+}
+
+.prize-overlay-sanka { height: 45px; }
+.prize-overlay-b,
+.prize-overlay-a,
+.prize-overlay-special { height: 45px; }
+
+/* カード内のメイン画像 */
+.prize-card > img:not(.prize-overlay) {
+  width: 70%;
+  height: auto;
+  margin: 10px 0;
+  border-radius: 5px;
+}
+
+/* 応募条件テキスト */
+.prize-condition {
+  margin-top: 8px;
+  font-size: 14px;
+  line-height: 1.5em;
+  white-space: pre-line;
+  max-width: 80%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ====== レスポンシブ ====== */
+@media (min-width: 480px) {
+  .header-image img { max-width: 50%; }
+}

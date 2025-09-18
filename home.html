@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>スタンプラリー ホーム</title>
+  <link rel="stylesheet" href="home.css">
+</head>
+<body>
+  <!-- 固定ヘッダー背景 -->
+  <div class="top-background"></div>
+
+  <!-- ロゴ -->
+  <div id="logoHeader">
+    <img src="/image/logo.png" alt="ロゴ">
+  </div>
+
+  <!-- メニュー・ヘルプ -->
+  <header>
+    <button id="menuBtn"><img src="image/menu.png" alt="メニュー"></button>
+    <button id="helpBtn"><img src="/image/help.png" alt="ヘルプ"></button>
+  </header>
+
+  <!-- タブ -->
+  <div id="tabButtons">
+    <button data-tab="yakisoba">登別閻魔焼きそば</button>
+    <button data-tab="brand">登別ブランド品</button>
+    <button data-tab="ainu">アイヌ文化施設・史跡</button>
+  </div>
+
+  <!-- メニューリスト -->
+  <div id="menuList" class="hidden">
+    <button class="close-btn" onclick="menuList.classList.add('hidden')">
+      <img src="/image/close2.png" alt="閉じる">
+    </button>
+    <ul>
+<!-- メニューリスト内の warning -->
+      <li class="menu-warning">
+        <a href="#" id="openWarning">
+          <img src="/image/warning.png" alt="注意事項">
+        </a>
+      </li>
+
+      <!-- 警告ポップアップ -->
+      <div id="warningPopup" class="warning-popup hidden">
+        <div class="warning-popup-content">
+          <button class="close-btn" id="closeWarningBtn">
+            <img src="/image/close2.png" alt="閉じる">
+          </button>
+          <div class="warning-popup-inner">
+            <!-- スクロールできるテキスト領域 -->
+            <div class="warning-text">
+              <p>
+                <h3>参加条件</h3>
+                ● 注意事項その1：長いテキストでも表示できます。<br><br>
+                ● 注意事項その2：スクロール領域で縦に長い文章を入れられます。<br><br>
+                ● 注意事項その3：スタイルをカスタマイズすることで自由なレイアウトが可能です。<br><br>
+                …続きがある場合もここでスクロール可能です。
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <li class="menu-map">
+        <a href="map.html">
+          <img src="/image/go_map.png" alt="マップへ">
+        </a>
+      </li>
+      <li class="menu-entry">
+        <a href="entry.html">
+          <img src="/image/go_entry.png" alt="応募フォームへ">
+        </a>
+      </li>
+    </ul>
+  </div>
+
+  <!-- ヘルプリスト -->
+  <div id="helpList" class="hidden">
+    <button class="close-btn" onclick="helpList.classList.add('hidden')">
+      <img src="/image/close2.png" alt="閉じる">
+    </button>
+    <ul>
+      <li class="help-home">
+        <a href="#" onclick="openHelp('home')">
+          <img src="/image/help_home.png" alt="ホームの使い方">
+        </a>
+      </li>
+      <li class="help-qr">
+        <a href="#" onclick="openHelp('qr')">
+          <img src="/image/help_qr.png" alt="QRコード読み取りの使い方">
+        </a>
+      </li>
+    </ul>
+  </div>
+
+
+  <!-- ヘルプモーダル -->
+  <div id="helpModal" class="modal hidden">
+    <div class="help-modal-image-container">
+      <img id="helpImage" src="/image/help_modal.png" alt="ヘルプ画像">
+    </div>
+    <div class="help-controls-bottom">
+      <div class="help-arrow-wrapper">
+        <button id="prevHelpBtn" class="help-arrow-btn hidden">&larr;</button>
+      </div>
+      <div class="help-arrow-wrapper right">
+        <button id="nextHelpBtn" class="help-arrow-btn hidden">&rarr;</button>
+      </div>
+    </div>
+    <button onclick="closeHelp()" style="margin-top: 10px;">閉じる</button>
+  </div>
+
+  <!-- スタンプ表示 -->
+  <main id="stampContainer">
+    <!-- ここにスタンプ一覧がJavaScriptで描画される -->
+  </main>
+
+  <!-- ポップアップ -->
+  <div id="popup" class="popup hidden">
+    <img id="popupImage" src="" alt="店舗画像">
+    <p id="popupStoreName"></p>
+    <p id="popupPhone"></p>
+    <p id="popupZip"></p>
+    <p id="popupAddress"></p>
+    <p id="popupDate"></p>
+    <button onclick="closePopup()">閉じる</button>
+  </div>
+
+  <!-- QRボタン -->
+  <a href="qrscan.html" id="qrFixedButton">
+    <img src="image/code.png" alt="QR読み取り">
+  </a>
+
+  <!-- 左下キャラ -->
+  <div class="fixed-character">
+    <img src="/image/tom_2.png" alt="キャラクター">
+  </div>
+
+  <script src="home.js"></script>
+</body>
+</html>

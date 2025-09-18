@@ -1,0 +1,820 @@
+:root {
+  --font-family-base: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "メイリオ", Meiryo, sans-serif;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.15);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.2);
+  --color-all-bg: #4285F4;
+  --color-all-active: #3367D6;
+  --color-enma-bg: #AE00FF;
+  --color-enma-active: #8A00CC;
+  --color-brand-bg: #1E88E5;
+  --color-brand-active: #1565C0;
+  --color-ainu-bg: #43A047;
+  --color-ainu-active: #2E7D32;
+  --info-bg: #757575;
+  --info-text: #ffffff;
+  --info-link: #ffffff;
+  --info-link-border: rgba(255, 255, 255, 0.7);
+  --info-link-hover-bg: rgba(255, 255, 255, 0.15);
+}
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-family-base);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
+}
+#map {
+  height: 100vh;
+  width: 100%;
+}
+/* === 右上のフローティングロゴ === */
+.floating-logo {
+position: fixed;
+top: 20px;
+right: 20px;
+z-index: 1; /* マップの上に表示 */
+pointer-events: none; /* ロゴがマップの操作を邪魔しないようにする */
+}
+.floating-logo img {
+display: block;
+width: 300px; /* ロゴの基本サイズ */
+height: auto;
+opacity: 0.9; /* 少しだけ透明にしてマップと馴染ませる */
+}
+
+/* === スマホ表示時の調整（メディアクエリ内） === */
+@media (max-width: 768px) {
+/* （既存のルール...） */
+
+/* ロゴの位置とサイズを調整 */
+.floating-logo {
+  top: 15px;
+  right: 15px;
+}
+.floating-logo img {
+  width: 190px; /* スマホでは少し小さくする */
+}
+}
+ .hamburger-btn {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    width: 56px;
+    height: 56px;
+    z-index: 1001;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background-image: url('image/4-8.png');
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: transparent;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+  }
+  .hamburger-btn:hover {
+    transform: scale(1.1);
+  }
+  .fab-button {
+    position: fixed;
+    z-index: 998;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    /* box-shadow: var(--shadow-md); この行は削除されました */
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: transparent;
+    border: none;
+  }
+  .fab-button:hover {
+    transform: scale(1.05);
+    /* box-shadow: var(--shadow-lg); この行は削除されました */
+  }
+  .fab-button.bottom-right {
+    bottom: 25px;
+    right: 20px;
+  }
+  .fab-button.bottom-left {
+    bottom: 25px;
+    left: 20px;
+  }
+  .fab-button.reset-view-btn {
+    bottom: 95px;
+  }
+  .menu-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.4); z-index: 1000;
+    opacity: 0; visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s;
+  }
+  .menu-overlay.show {
+    opacity: 1; visibility: visible;
+  }
+
+  /* === サイドメニューのスタイル === */
+  .side-menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 280px;
+    height: 100%;
+    box-shadow: var(--shadow-lg);
+    transform: translateX(-100%);
+    transition: transform 0.3s ease-in-out;
+    z-index: 1002;
+    display: flex;
+    flex-direction: column;
+
+    /* 2. 背景画像を指定 */
+    background-image: url('image/4-1_メニュー画面.png'); /* 実際のファイル名に置き換えてください */
+    
+    /* 3. 画像の横幅を100%にし、縦は自動調整 */
+    background-size: 100% auto;
+
+    /* 4. 画像の繰り返しをなくし、上部を基準に配置 */
+    background-repeat: no-repeat;
+    background-position: top center;
+  }
+
+  .side-menu.open {
+    transform: translateX(0);
+  }
+  .side-menu-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    flex-shrink: 0; /* ヘッダーが縮まないようにする */
+  }
+  .side-menu-header h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 500;
+    width: 100%;
+    text-align: center;
+    /* ×ボタンの幅を考慮して中央寄せ */
+    padding-left: 32px;
+  }
+  /* ▼ 閉じるボタンのデザインを変更 */
+  .side-menu-header .close-btn {
+    position: static; /* 位置の指定をリセット */
+    width: auto;
+    height: auto;
+    background: transparent; /* 背景の円を削除 */
+    border-radius: 0;
+    color: white;
+    font-size: 28px;
+    font-weight: 300;
+  }
+  .side-menu-header .close-btn:hover {
+    background: transparent;
+    color: rgba(255, 255, 255, 0.8);
+    transform: none; /* ホバー時の回転を解除 */
+  }
+  .side-menu-nav {
+    list-style: none;
+    padding: 20px; /* ボタンとメニュー端の余白 */
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* ボタン同士の間隔 */
+  }
+
+  /* 3つのボタンに共通のスタイル */
+  .side-menu-nav li button {
+    width: 85%;
+    height: 65px; /* ボタンの高さ。画像の比率に合わせて調整してください */
+    border: none;
+    background-color: transparent;
+    padding: 0;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    /* ボタンの背景画像が歪まないように設定 */
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    margin-left: 15px;
+  }
+  .side-menu-nav li button:hover {
+    transform: scale(1.03); /* マウスを乗せると少し拡大 */
+  }
+  /* ▼ 各ボタンに用意した画像を個別に指定 */
+  #menuOpenSearchBtn {
+    background-image: url('image/4-2.png');
+    margin-top: 10px;
+  }
+  #menuOpenFilterBtn {
+    background-image: url('image/4-3.png');
+    margin-top: 20px;
+  }
+  #menuTutorialBtn {
+    background-image: url('image/4-4.png');
+    margin-top: 15px;
+  }
+
+/* 「スポットを探す」モーダルパネル専用のサイズ調整 */
+#searchListModal {
+  /* PCなど幅の広い画面で、パネルが広がりすぎないように最大幅を設定します */
+  max-width: 300px;
+
+  /* パネルの縦幅が画面に対して大きくなりすぎないように最大高さを設定します */
+  height: 65vh;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-panel {
+  /* 位置や表示/非表示に関する設定はそのまま */
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.95); /* 表示アニメーション用にscaleを残す */
+  z-index: 2000;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  opacity: 0;
+  visibility: hidden;
+
+  /* ▼ デフォルトの背景や余白を再設定 */
+  background: #ffffff;
+  border-radius: 16px; /* 角丸 */
+  padding: 24px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  width: 88%;
+  max-width: 90%; /* デフォルトの最大幅をtutorialModalと統一 */
+  
+}
+
+/* 表示状態のスタイル */
+.modal-panel.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+/* ▼ 画像モーダル専用のスタイル（tutorialModal） */
+#tutorialModal {
+  /* display:flexで中央寄せを実現 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  /* 基本スタイルを上書きして、枠と背景を消す */
+  background: none;
+  box-shadow: none;
+  padding: 0;
+  
+  /* 画像の大きさを指定 */
+  width: 88%;
+  max-width: 90%;
+}
+
+/* ▼ フィルターモーダル専用のスタイル（filterModal） - 画面中央配置 */
+#filterModal {
+  /* display:flexで中央寄せを実現 */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  /* 基本スタイルを上書きして、枠と背景を消す */
+  background: none;
+  box-shadow: none;
+  padding: 0;
+  
+  /* 画面中央配置のための位置設定 */
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.95);
+  
+  /* 画像の大きさを指定 */
+  width: 88%;
+  max-width: 90%;
+}
+
+/* フィルターモーダルのコンテナ - 相対位置指定で画像の上にボタンを配置 */
+#filterModal .modal-content {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap:25px
+}
+
+/* フィルターモーダルの表示状態 */
+#filterModal.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+/* 画像モーダル内の画像のサイズを修正 */
+#tutorialModal img {
+  width: 88%; /* パネルの幅に合わせる */
+  height: auto;
+  display: block;
+}
+
+/* フィルターモーダル内のタイトル画像のサイズを修正 */
+#filterModal .modal-title-image {
+  width: 88%; /* tutorialModalの画像と同じサイズ */
+  height: auto;
+  display: block;
+  position: relative;
+  z-index: 1;
+}
+
+/* フィルターボタンのコンテナ - 画像の上に絶対位置で配置 */
+#filterModal .filter-buttons {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 20px; /* ボタン間の間隔 */
+  z-index: 2;
+  padding: 20% 10%; /* 画像内の適切な位置に配置するための余白 */
+  box-sizing: border-box;
+}
+
+.close-btn {
+  position: absolute;
+  top: 22px;
+  right:37px;
+  
+  /* ボタンのサイズ */
+  width: 20px;
+  height: 20px;
+  
+  /* 画像を指定 */
+  background-image: url('image/cross_btn.png'); /* ★ここに画像ファイル名を入れる */
+  background-size: contain; /* 画像がボタンに収まるように調整 */
+  background-position: center;
+  background-repeat: no-repeat;
+  
+  /* 元の背景色と枠線を削除 */
+  background-color: transparent;
+  border: none;
+
+  z-index: 10;
+  
+}
+
+/* フィルターボタンの共通スタイル */
+.filter-button {
+  /* ボタンのサイズ（画像のサイズに合わせて調整） */
+  height: 50px;
+  width: 80%; /* 画像内に収まるサイズ */
+  
+  /* 画像の表示設定 */
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  /* ボタンのデフォルトスタイルを解除 */
+  background-color: transparent;
+  border: none;
+  padding: 0;
+  
+}
+
+/* 各ボタンに個別の画像を割り当て */
+.filter-button.all-courses {
+  background-image: url('image/all_course_btn.png'); /* ★「すべて表示」ボタンの画像 */
+  position: relative;
+  top:7px;
+}
+
+.filter-button.enma-course {
+  background-image: url('image/enma_course_btn.png'); /* ★「閻魔やきそば」ボタンの画像 */
+  position: relative;
+  top:30px;
+}
+
+.filter-button.brand-course {
+  background-image: url('image/brand_course_btn.png'); /* ★「ブランド推奨品」ボタンの画像 */
+  position: relative;
+  top:50px;
+}
+
+.filter-button.ainu-course {
+  background-image: url('image/ainu_course_btn.png'); /* ★「アイヌ文化」ボタンの画像 */
+  position: relative;
+  top:60px;
+}
+
+  /* 検索モーダルの「×」ボタン専用の位置調整 */
+  /* 検索モーダルの「×」ボタン専用の位置調整 */
+  #searchListModal .close-btn {
+  top: 10px;   /* 上からの位置 */
+  right: 20px;  /* 右からの位置 */
+  width: 18px;  /* ボタンの幅 */
+  height: 18px; /* ボタンの高さ */
+}
+  
+  /* ▼▼▼【ここから修正】▼▼▼ */
+  .list-tabs {
+    display: flex;
+    gap: 8px; /* タブ間の間隔を広げます */
+    margin: 0;
+    padding: 8px 12px; /* 上下左右の余白を調整 */
+    border-bottom: 1px solid #D7C6A3;
+    flex-shrink: 0;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    
+    /* 両端にグラデーションマスクを適用してスクロール可能であることを示唆 */
+    -webkit-mask-image: linear-gradient(to right, 
+      rgba(0,0,0,0) 0%,   /* 左端は透明 */
+      rgba(0,0,0,1) 20px, /* 20pxかけて不透明に */
+      rgba(0,0,0,1) calc(100% - 20px), /* 右端の20px手前まで不透明 */
+      rgba(0,0,0,0) 100%  /* 右端は透明 */
+    );
+    mask-image: linear-gradient(to right, 
+      rgba(0,0,0,0) 0%, 
+      rgba(0,0,0,1) 20px, 
+      rgba(0,0,0,1) calc(100% - 20px), 
+      rgba(0,0,0,0) 100%
+    );
+  }
+
+  /* WebKit系ブラウザ向けに明示的にスクロールバーを非表示にする設定 */
+  .list-tabs::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .list-tab {
+    padding: 8px 16px; /* タブ内の左右の余白を広げます */
+    border: none;
+    background-color: #F8E4A8; /* 通常時の背景色 */
+    font-size: 14px; /* 見やすいようにフォントサイズを少し大きく */
+    font-weight: 600;
+    cursor: pointer;
+    color: #795548;
+    border-radius: 20px; /* 角を丸くしてボタンのような見た目に */
+    transition: all 0.2s ease;
+    white-space: nowrap; /* 文字が詰まっている印象をなくすため、改行を防ぎます */
+    border-bottom: none; /* 元の下線スタイルを削除 */
+  }
+  .list-tab:hover {
+    background-color: #F5DDA0;
+    color: #3D2B1F;
+  }
+  .list-tab.active {
+    background-color: #A95A68; /* アクティブ時の背景色をアクセントカラーに */
+    color: #FFFFFF; /* アクティブ時の文字色を白に */
+    font-weight: 700;
+    border-bottom: none; /* 元の下線スタイルを削除 */
+  }
+  /* ▲▲▲【ここまで修正】▲▲▲ */
+
+  .search-input-wrapper { margin-bottom: 0px; flex-shrink: 0; }
+  .search-input { width: 100%; padding: 12px 16px; font-size: 16px; border: 1px solid #ddd; border-radius: var(--radius-md); box-sizing: border-box; }
+  .spot-list { list-style: none; padding: 0; margin: 0; overflow-y: auto; flex-grow: 1; }
+  
+  .spot-list-item { 
+    padding: 12px 8px; 
+    border-bottom: 3px solid #eee; 
+    cursor: pointer; 
+    transition: background-color 0.2s ease; 
+    display: flex;
+    flex-direction: column;
+  }
+
+  .spot-list-item:last-child { border-bottom: none; }
+  
+  .spot-list-item .item-name { 
+    font-weight: 600; 
+    color: #333; 
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-grow: 1;
+  }
+
+  .spot-list-item .item-course { font-size: 12px; color: #888; margin-top: 4px; }
+  
+  .spot-distance-tag {
+      background-color: #A95A68;
+      color: white;
+      font-size: 12px;
+      padding: 2px 8px;
+      border-radius: 12px;
+      white-space: nowrap;
+  }
+  
+  @media (max-width: 768px) {
+    .hamburger-btn { top: 15px; left: 15px; }
+    .fab-button.bottom-right { bottom: 20px; right: 15px; }
+    .fab-button.reset-view-btn {
+      bottom: 90px;
+    }
+    .info-window-container { max-width: 250px; }
+
+    #homeBtn {
+        width: 70px;
+        height: 70px;
+        bottom: 10px;
+        left: 10px;
+    }
+  }
+  
+  #resetViewBtn {
+    background-image: url('image/引き画面にするボタン.png');
+  }
+  #currentLocationBtn {
+    background-image: url('image/現在地に移動するボタン.png');
+  }
+  #homeBtn {
+    background-image: url('image/戻るボタン2.png');
+    width: 70px;
+    height: 70px;
+    bottom: 10px;
+    left: 10px;
+  }
+
+  #searchListModal {
+    background-color: #FBEBBA; /* 画像が読み込めない場合の背景色 */
+    color: #6D4C41;
+    /* ▼▼▼ 背景画像の設定を追加 ▼▼▼ */
+    /* ★★★ 'image/your-background-image.png' を実際に使用する画像のパスに変更してください ★★★ */
+    background-image: url('image/background.png');
+    background-size: cover; /* 画像をパネル全体に表示 */
+    background-position: center; /* 画像を中央に配置 */
+    background-repeat: no-repeat; /* 画像を繰り返さない */
+    /* ▲▲▲ 背景画像の設定を追加 ▲▲▲ */
+  }
+
+  .search-input {
+    background-color: #FFFFFF;
+    border: 1px solid #D7C6A3;
+    color: #3D2B1F;
+  }
+  .search-input::placeholder {
+    color: #A1887F;
+  }
+
+  .spot-list-item {
+    border-bottom: 1px solid #765400;
+  }
+
+  .spot-list-item .item-name {
+    color: #6D4C41;
+  }
+  .spot-list-item .item-course {
+    color: #8D6E63;
+  }
+
+  .course-notification {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(26, 26, 26, 0.85);
+    color: white;
+    box-sizing: border-box;
+    
+    min-width: 180px;
+    max-width: 250px;
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border-radius: 25px;
+    z-index: 1000;
+    font-size: 16px;
+    font-weight: 500;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    backdrop-filter: blur(5px);
+    
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
+  }
+
+  .course-notification.show {
+    visibility: visible;
+    opacity: 1;
+  }
+
+  @media (max-width: 768px) {
+    .course-notification {
+      bottom: 85px; 
+      max-width: calc(100% - 40px);
+      font-size: 14px;
+      padding-left: 15px;
+      padding-right: 15px;
+    }
+  }
+
+.gm-style-iw-c {
+  padding: 0 !important;
+  max-width: 280px !important;
+}
+.gm-style-iw-d {
+  overflow: hidden !important;
+}
+.gm-style .gm-style-iw-t::after {
+  display: none;
+}
+
+.info-window-container {
+  width: 280px;
+  background-color: #fff;
+  border-radius: 0;
+  box-shadow: none;
+  overflow: hidden;
+  padding: 0;
+  font-size: 14px;
+  position: relative;
+}
+
+.info-window-header {
+  padding: 10px 16px;
+  background-color: var(--info-bg);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.info-window-image {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+  display: block;
+  background-color: #f0f0f0;
+}
+
+.info-window-body {
+  padding: 16px;
+}
+.info-window-body h3 {
+  margin: 0 0 8px 0;
+  font-size: 18px;
+  color: #222;
+  font-weight: 700;
+}
+.info-window-body p {
+  margin: 0;
+  font-size: 13px;
+  color: #555;
+  line-height: 1.6;
+}
+
+.info-window-actions {
+  display: flex;
+  gap: 10px;
+  padding: 0 16px 16px 16px;
+  border-top: 1px solid #eee;
+  margin-top: 16px;
+  padding-top: 16px;
+}
+.info-window-actions .info-link {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px;
+  border: none;
+  background-color: var(--info-bg);
+  color: #fff;
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  transition: opacity 0.2s ease;
+}
+.info-window-actions .info-link:hover {
+  opacity: 0.85;
+}
+.info-window-actions .info-link svg {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+}
+
+.stamp-get-ribbon {
+  position: absolute;
+  top: 12px;
+  right: -32px;
+  width: 120px;
+  background-color: #ff4500;
+  color: white;
+  padding: 6px 0;
+  font-size: 14px;
+  font-weight: bold;
+  text-align: center;
+  transform: rotate(45deg);
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.3);
+  z-index: 10;
+  letter-spacing: 1.5px;
+}
+
+/* === プログレスバーのスタイルを追加 === */
+#loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.95);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.5s ease;
+  opacity: 1;
+}
+
+#loading-overlay.hidden {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.loading-container {
+  width: 80%;
+  max-width: 300px;
+  text-align: center;
+}
+
+.progress-bar-container {
+  width: 100%;
+  height: 8px;
+  background-color: #e0e0e0;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 16px;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.progress-bar {
+  width: 0%;
+  height: 100%;
+  background-color: #f7d469; /* メインカラー */
+  border-radius: 4px;
+  transition: width 0.2s ease-out;
+}
+
+.progress-text {
+  font-size: 16px;
+  font-weight: 500;
+  color: #333;
+}
+
+/* === Google Maps InfoWindowのデフォルトスタイル上書き（余白削除） === */
+
+/* InfoWindow全体のコンテナ */
+.gm-style-iw-c {
+  padding: 0 !important; /* 内側の余白を全て削除 */
+  border-radius: 0 !important; /* 角丸を削除 */
+  background-color: transparent !important; /* 背景を透明に */
+  box-shadow: none !important; /* 影を削除 */
+}
+
+/* InfoWindowのデフォルトの閉じるボタン */
+.gm-style-iw-c button {
+  display: none !important; /* 閉じるボタンを非表示 */
+}
+
+/* (既存のCSSはすべてそのまま) */
+
+/* === ここから追加 === */
+/* キーボード操作のアクセシビリティ向上 */
+:is(button, a, input, [tabindex]):focus-visible {
+  outline: 3px solid var(--color-all-active, #3367D6);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm, 8px);
+}
+
+/* 一部の要素でアウトラインが崩れる場合、個別に調整 */
+.close-btn:focus-visible,
+.hamburger-btn:focus-visible,
+.fab-button:focus-visible {
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+}
+.side-menu-nav li button:focus-visible {
+    border-radius: var(--radius-md, 12px);
+}
